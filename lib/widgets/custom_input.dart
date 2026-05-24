@@ -6,16 +6,21 @@ class CustomInput extends StatelessWidget {
 
   final bool obscureText;
 
+  final TextEditingController? controller;
+
   const CustomInput({
     super.key,
     required this.hint,
     this.obscureText = false,
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
 
     return TextField(
+
+      controller: controller,
 
       obscureText: obscureText,
 

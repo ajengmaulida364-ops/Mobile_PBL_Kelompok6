@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../teacher/dashboard_teacher_screen.dart';
+
+import '../../services/api_service.dart';
+
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_input.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+
+  final TextEditingController loginController =
+      TextEditingController();
+
+  final TextEditingController passwordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +59,7 @@ class LoginScreen extends StatelessWidget {
 
               children: [
 
-                // HEADER HIJAU
+                // HEADER
                 Container(
 
                   width: double.infinity,
@@ -60,13 +76,14 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
 
-                  child: Column(
+                  child: const Column(
 
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
 
                     children: [
 
-                      const Text(
+                      Text(
                         "Login Sistem",
 
                         style: TextStyle(
@@ -97,12 +114,14 @@ class LoginScreen extends StatelessWidget {
 
                   child: Column(
 
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
 
                     children: [
 
                       const Text(
                         "Username",
+
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -110,7 +129,8 @@ class LoginScreen extends StatelessWidget {
 
                       const SizedBox(height: 10),
 
-                      const CustomInput(
+                      CustomInput(
+                        controller: loginController,
                         hint: "NPSN / Email / NISN",
                       ),
 
@@ -118,6 +138,7 @@ class LoginScreen extends StatelessWidget {
 
                       const Text(
                         "Password",
+
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -125,7 +146,8 @@ class LoginScreen extends StatelessWidget {
 
                       const SizedBox(height: 10),
 
-                      const CustomInput(
+                      CustomInput(
+                        controller: passwordController,
                         hint: "Masukkan password",
                         obscureText: true,
                       ),
@@ -144,8 +166,81 @@ class LoginScreen extends StatelessWidget {
 
                             text: "Login",
 
-                            onPressed: () {
+                            onPressed: () async {
 
+                              print(
+                                "BUTTON LOGIN DIKLIK",
+                              );
+
+                              try {
+
+                                final result =
+                                    await ApiService()
+                                        .login(
+
+                                  login:
+                                      loginController
+                                          .text
+                                          .trim(),
+
+                                  password:
+                                      passwordController
+                                          .text
+                                          .trim(),
+
+                                );
+
+                                print(result);
+
+                                if (result['status']
+                                    == true) {
+
+                                  if (result['role']
+                                      == 'teacher') {
+
+                                    Navigator.push(
+                                      context,
+
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const DashboardTeacherScreen(),
+                                      ),
+                                    );
+                                  }
+
+                                } else {
+
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
+
+                                    SnackBar(
+                                      content: Text(
+
+                                        result['message']
+                                            ??
+                                            "Login gagal",
+
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                              } catch (e) {
+
+                                print(e);
+
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(
+
+                                  SnackBar(
+                                    content: Text(
+                                      "Error: $e",
+                                    ),
+                                  ),
+                                );
+                              }
                             },
                           ),
                         ),
