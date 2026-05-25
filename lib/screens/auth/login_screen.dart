@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../admin/dashboard_admin_screen.dart';
 import '../teacher/dashboard_teacher_screen.dart';
+import '../parent/dashboard_parent_screen.dart';
 
 import '../../services/api_service.dart';
 
@@ -12,51 +13,36 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() =>
-      _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState
-    extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController loginController = TextEditingController();
 
-  final TextEditingController loginController =
-      TextEditingController();
-
-  final TextEditingController passwordController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor:
-          const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       body: Center(
-
         child: SingleChildScrollView(
-
           padding: const EdgeInsets.all(24),
 
           child: Container(
-
             width: 400,
 
             decoration: BoxDecoration(
-
               color: Colors.white,
 
-              borderRadius:
-                  BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20),
 
               boxShadow: [
-
                 BoxShadow(
-                  color: Colors.black
-                      .withValues(alpha: 0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
 
                   blurRadius: 10,
 
@@ -66,61 +52,45 @@ class _LoginScreenState
             ),
 
             child: Column(
-
               mainAxisSize: MainAxisSize.min,
 
               children: [
-
                 /// HEADER
                 Container(
-
                   width: double.infinity,
 
-                  padding:
-                      const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
 
-                  decoration:
-                      const BoxDecoration(
-
+                  decoration: const BoxDecoration(
                     color: Colors.teal,
 
-                    borderRadius:
-                        BorderRadius.only(
-                      topLeft:
-                          Radius.circular(20),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
 
-                      topRight:
-                          Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
                   ),
 
                   child: const Column(
-
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-
                       Text(
                         "SIPARI MOBILE",
 
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,
-                          fontWeight:
-                              FontWeight.bold,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
 
                       SizedBox(height: 8),
 
                       Text(
-                        "Login admin dan guru",
+                        "Login admin, guru, atau orang tua",
 
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ],
                   ),
@@ -128,83 +98,53 @@ class _LoginScreenState
 
                 /// FORM
                 Padding(
-
-                  padding:
-                      const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
 
                   child: Column(
-
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-
                       const Text(
-
                         "Username",
 
-                        style: TextStyle(
-                          fontWeight:
-                              FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
 
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
 
                       CustomInput(
-                        controller:
-                            loginController,
+                        controller: loginController,
 
-                        hint:
-                            "Masukkan username",
+                        hint: "Masukkan username",
                       ),
 
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
 
                       const Text(
-
                         "Password",
 
-                        style: TextStyle(
-                          fontWeight:
-                              FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
 
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
 
                       CustomInput(
-                        controller:
-                            passwordController,
+                        controller: passwordController,
 
-                        hint:
-                            "Masukkan password",
+                        hint: "Masukkan password",
 
                         obscureText: true,
                       ),
 
-                      const SizedBox(
-                        height: 30,
-                      ),
+                      const SizedBox(height: 30),
 
                       SizedBox(
-
                         width: double.infinity,
 
                         child: CustomButton(
-
-                          text: isLoading
-                              ? "Loading..."
-                              : "Login",
+                          text: isLoading ? "Loading..." : "Login",
 
                           onPressed: () async {
-
                             if (isLoading) return;
 
                             setState(() {
@@ -212,48 +152,27 @@ class _LoginScreenState
                             });
 
                             try {
+                              print("BUTTON LOGIN DIKLIK");
 
-                              print(
-                                "BUTTON LOGIN DIKLIK",
-                              );
+                              final result = await ApiService().login(
+                                login: loginController.text.trim(),
 
-                              final result =
-                                  await ApiService()
-                                      .login(
-
-                                login:
-                                    loginController
-                                        .text
-                                        .trim(),
-
-                                password:
-                                    passwordController
-                                        .text
-                                        .trim(),
+                                password: passwordController.text.trim(),
                               );
 
                               print(result);
 
-                              final role =
-                                  result['role']
-                                      .toString()
-                                      .trim()
-                                      .toLowerCase();
+                              final role = result['role']
+                                  .toString()
+                                  .trim()
+                                  .toLowerCase();
 
-                              print(
-                                "ROLE: $role",
-                              );
+                              print("ROLE: $role");
 
-                              if (result['status']
-                                  == true) {
-
+                              if (result['status'] == true) {
                                 /// ADMIN
-                                if (role ==
-                                    'admin') {
-
-                                  print(
-                                    "MASUK ADMIN",
-                                  );
+                                if (role == 'admin') {
+                                  print("MASUK ADMIN");
 
                                   Navigator.pushReplacement(
                                     context,
@@ -264,14 +183,9 @@ class _LoginScreenState
                                     ),
                                   );
                                 }
-
                                 /// TEACHER
-                                else if (role ==
-                                    'teacher') {
-
-                                  print(
-                                    "MASUK TEACHER",
-                                  );
+                                else if (role == 'teacher') {
+                                  print("MASUK TEACHER");
 
                                   Navigator.pushReplacement(
                                     context,
@@ -282,43 +196,38 @@ class _LoginScreenState
                                     ),
                                   );
                                 }
+                                /// PARENT
+                                else if (role == 'parent') {
+                                  print("MASUK PARENT");
 
-                              } else {
+                                  Navigator.pushReplacement(
+                                    context,
 
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(
-
-                                  const SnackBar(
-                                    backgroundColor:
-                                        Colors.red,
-
-                                    content: Text(
-                                      "Login gagal",
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DashboardParentScreen(),
                                     ),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.red,
+
+                                    content: Text("Login gagal"),
                                   ),
                                 );
                               }
-
                             } catch (e) {
-
-                              print(
-                                "ERROR LOGIN",
-                              );
+                              print("ERROR LOGIN");
 
                               print(e);
 
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(
-
+                              ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  backgroundColor:
-                                      Colors.red,
+                                  backgroundColor: Colors.red,
 
-                                  content: Text(
-                                    "Error: $e",
-                                  ),
+                                  content: Text("Error: $e"),
                                 ),
                               );
                             }
