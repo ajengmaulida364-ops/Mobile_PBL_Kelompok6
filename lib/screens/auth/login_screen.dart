@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../admin/dashboard_admin_screen.dart';
 import '../teacher/dashboard_teacher_screen.dart';
 
 import '../../services/api_service.dart';
@@ -11,10 +12,12 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() =>
+      _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState
+    extends State<LoginScreen> {
 
   final TextEditingController loginController =
       TextEditingController();
@@ -22,33 +25,42 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController =
       TextEditingController();
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
 
-      backgroundColor: Colors.white,
+      backgroundColor:
+          const Color(0xffF5F7FA),
 
       body: Center(
 
-        child: Padding(
+        child: SingleChildScrollView(
 
           padding: const EdgeInsets.all(24),
 
           child: Container(
 
-            width: double.infinity,
+            width: 400,
 
             decoration: BoxDecoration(
 
               color: Colors.white,
 
-              borderRadius: BorderRadius.circular(20),
+              borderRadius:
+                  BorderRadius.circular(20),
 
               boxShadow: [
+
                 BoxShadow(
-                  color: Colors.black12,
+                  color: Colors.black
+                      .withValues(alpha: 0.08),
+
                   blurRadius: 10,
+
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -59,20 +71,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
               children: [
 
-                // HEADER
+                /// HEADER
                 Container(
 
                   width: double.infinity,
 
-                  padding: const EdgeInsets.all(20),
+                  padding:
+                      const EdgeInsets.all(24),
 
-                  decoration: const BoxDecoration(
+                  decoration:
+                      const BoxDecoration(
 
-                    color: Color(0xFF00695C),
+                    color: Colors.teal,
 
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                    borderRadius:
+                        BorderRadius.only(
+                      topLeft:
+                          Radius.circular(20),
+
+                      topRight:
+                          Radius.circular(20),
                     ),
                   ),
 
@@ -84,19 +102,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
 
                       Text(
-                        "Login Sistem",
+                        "SIPARI MOBILE",
 
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                          fontWeight:
+                              FontWeight.bold,
                         ),
                       ),
 
                       SizedBox(height: 8),
 
                       Text(
-                        "Masuk sebagai admin, guru, atau orang tua.",
+                        "Login admin dan guru",
 
                         style: TextStyle(
                           color: Colors.white70,
@@ -107,10 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                // FORM
+                /// FORM
                 Padding(
 
-                  padding: const EdgeInsets.all(20),
+                  padding:
+                      const EdgeInsets.all(24),
 
                   child: Column(
 
@@ -120,129 +140,193 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
 
                       const Text(
+
                         "Username",
 
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight:
+                              FontWeight.bold,
                         ),
                       ),
 
-                      const SizedBox(height: 10),
-
-                      CustomInput(
-                        controller: loginController,
-                        hint: "NPSN / Email / NISN",
+                      const SizedBox(
+                        height: 10,
                       ),
 
-                      const SizedBox(height: 20),
+                      CustomInput(
+                        controller:
+                            loginController,
+
+                        hint:
+                            "Masukkan username",
+                      ),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
 
                       const Text(
+
                         "Password",
 
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight:
+                              FontWeight.bold,
                         ),
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(
+                        height: 10,
+                      ),
 
                       CustomInput(
-                        controller: passwordController,
-                        hint: "Masukkan password",
+                        controller:
+                            passwordController,
+
+                        hint:
+                            "Masukkan password",
+
                         obscureText: true,
                       ),
 
-                      const SizedBox(height: 30),
+                      const SizedBox(
+                        height: 30,
+                      ),
 
-                      Align(
+                      SizedBox(
 
-                        alignment: Alignment.centerRight,
+                        width: double.infinity,
 
-                        child: SizedBox(
+                        child: CustomButton(
 
-                          width: 120,
+                          text: isLoading
+                              ? "Loading..."
+                              : "Login",
 
-                          child: CustomButton(
+                          onPressed: () async {
 
-                            text: "Login",
+                            if (isLoading) return;
 
-                            onPressed: () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
 
                               print(
                                 "BUTTON LOGIN DIKLIK",
                               );
 
-                              try {
+                              final result =
+                                  await ApiService()
+                                      .login(
 
-                                final result =
-                                    await ApiService()
-                                        .login(
+                                login:
+                                    loginController
+                                        .text
+                                        .trim(),
 
-                                  login:
-                                      loginController
-                                          .text
-                                          .trim(),
+                                password:
+                                    passwordController
+                                        .text
+                                        .trim(),
+                              );
 
-                                  password:
-                                      passwordController
-                                          .text
-                                          .trim(),
+                              print(result);
 
-                                );
+                              final role =
+                                  result['role']
+                                      .toString()
+                                      .trim()
+                                      .toLowerCase();
 
-                                print(result);
+                              print(
+                                "ROLE: $role",
+                              );
 
-                                if (result['status']
-                                    == true) {
+                              if (result['status']
+                                  == true) {
 
-                                  if (result['role']
-                                      == 'teacher') {
+                                /// ADMIN
+                                if (role ==
+                                    'admin') {
 
-                                    Navigator.push(
-                                      context,
+                                  print(
+                                    "MASUK ADMIN",
+                                  );
 
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const DashboardTeacherScreen(),
-                                      ),
-                                    );
-                                  }
-
-                                } else {
-
-                                  ScaffoldMessenger.of(
+                                  Navigator.pushReplacement(
                                     context,
-                                  ).showSnackBar(
 
-                                    SnackBar(
-                                      content: Text(
-
-                                        result['message']
-                                            ??
-                                            "Login gagal",
-
-                                      ),
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DashboardAdminScreen(),
                                     ),
                                   );
                                 }
 
-                              } catch (e) {
+                                /// TEACHER
+                                else if (role ==
+                                    'teacher') {
 
-                                print(e);
+                                  print(
+                                    "MASUK TEACHER",
+                                  );
+
+                                  Navigator.pushReplacement(
+                                    context,
+
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DashboardTeacherScreen(),
+                                    ),
+                                  );
+                                }
+
+                              } else {
 
                                 ScaffoldMessenger.of(
                                   context,
                                 ).showSnackBar(
 
-                                  SnackBar(
+                                  const SnackBar(
+                                    backgroundColor:
+                                        Colors.red,
+
                                     content: Text(
-                                      "Error: $e",
+                                      "Login gagal",
                                     ),
                                   ),
                                 );
                               }
-                            },
-                          ),
+
+                            } catch (e) {
+
+                              print(
+                                "ERROR LOGIN",
+                              );
+
+                              print(e);
+
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(
+
+                                SnackBar(
+                                  backgroundColor:
+                                      Colors.red,
+
+                                  content: Text(
+                                    "Error: $e",
+                                  ),
+                                ),
+                              );
+                            }
+
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
                         ),
                       ),
                     ],
