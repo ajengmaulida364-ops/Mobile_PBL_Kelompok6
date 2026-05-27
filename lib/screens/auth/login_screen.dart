@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../teacher/dashboard_teacher_screen.dart';
-
 import '../../services/api_service.dart';
-
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_input.dart';
 
@@ -78,14 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   child: const Column(
 
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
 
                       Text(
                         "Login Sistem",
-
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,
@@ -97,7 +93,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       Text(
                         "Masuk sebagai admin, guru, atau orang tua.",
-
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -114,17 +109,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   child: Column(
 
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
 
                       const Text(
                         "Username",
-
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
 
                       const SizedBox(height: 10),
@@ -138,10 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const Text(
                         "Password",
-
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
 
                       const SizedBox(height: 10),
@@ -168,59 +156,42 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             onPressed: () async {
 
-                              print(
-                                "BUTTON LOGIN DIKLIK",
-                              );
+                              print("BUTTON LOGIN DIKLIK");
 
                               try {
 
                                 final result =
-                                    await ApiService()
-                                        .login(
+                                    await ApiService().login(
 
-                                  login:
-                                      loginController
-                                          .text
-                                          .trim(),
-
-                                  password:
-                                      passwordController
-                                          .text
-                                          .trim(),
+                                  login: loginController.text.trim(),
+                                  password: passwordController.text.trim(),
 
                                 );
 
                                 print(result);
 
-                                if (result['status']
-                                    == true) {
+                                if (result['status'] == true) {
 
-                                  if (result['role']
-                                      == 'teacher') {
+                                  if (result['role'] == 'teacher') {
 
                                     Navigator.push(
                                       context,
 
                                       MaterialPageRoute(
                                         builder: (_) =>
-                                            const DashboardTeacherScreen(),
+                                            DashboardTeacherScreen(),
                                       ),
                                     );
                                   }
 
                                 } else {
 
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(
-
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
                                     SnackBar(
                                       content: Text(
-
-                                        result['message']
-                                            ??
+                                        result['message'] ??
                                             "Login gagal",
-
                                       ),
                                     ),
                                   );
@@ -228,16 +199,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               } catch (e) {
 
-                                print(e);
-
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(
-
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(
                                   SnackBar(
-                                    content: Text(
-                                      "Error: $e",
-                                    ),
+                                    content: Text("Error: $e"),
                                   ),
                                 );
                               }
