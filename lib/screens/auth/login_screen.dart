@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../admin/dashboard_admin_screen.dart';
 import '../teacher/dashboard_teacher_screen.dart';
+
+
 import '../parent/dashboard_parent_screen.dart';
-
+ main
 import '../../services/api_service.dart';
-
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_input.dart';
 
@@ -72,11 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   child: const Column(
+
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
                       Text(
-                        "SIPARI MOBILE",
 
                         style: TextStyle(
                           color: Colors.white,
@@ -88,9 +89,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 8),
 
                       Text(
+
+                        "Masuk sebagai admin, guru, atau orang tua.",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
                         "Login admin, guru, atau orang tua",
 
                         style: TextStyle(color: Colors.white70, fontSize: 14),
+
                       ),
                     ],
                   ),
@@ -101,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.all(24),
 
                   child: Column(
+
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
@@ -157,22 +166,62 @@ class _LoginScreenState extends State<LoginScreen> {
                               final result = await ApiService().login(
                                 login: loginController.text.trim(),
 
+
+                            onPressed: () async {
+
+                              print("BUTTON LOGIN DIKLIK");
+
+                              try {
+
+                                final result =
+                                    await ApiService().login(
+
+                                  login: loginController.text.trim(),
+                                  password: passwordController.text.trim(),
+
+                                );
+
+                                print(result);
+
+                                if (result['status'] == true) {
+
+                                  if (result['role'] == 'teacher') {
+
                                 password: passwordController.text.trim(),
                               );
 
                               print(result);
+
 
                               final role = result['role']
                                   .toString()
                                   .trim()
                                   .toLowerCase();
 
+
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            DashboardTeacherScreen(),
+                                      ),
+                                    );
+                                  }
+=======
                               print("ROLE: $role");
+
 
                               if (result['status'] == true) {
                                 /// ADMIN
                                 if (role == 'admin') {
                                   print("MASUK ADMIN");
+
+
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        result['message'] ??
+                                            "Login gagal",
+                                      ),
 
                                   Navigator.pushReplacement(
                                     context,
@@ -180,6 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     MaterialPageRoute(
                                       builder: (_) =>
                                           const DashboardAdminScreen(),
+
                                     ),
                                   );
                                 }
@@ -189,6 +239,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                   Navigator.pushReplacement(
                                     context,
+
+
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    content: Text("Error: $e"),
 
                                     MaterialPageRoute(
                                       builder: (_) =>
@@ -215,6 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     backgroundColor: Colors.red,
 
                                     content: Text("Login gagal"),
+
                                   ),
                                 );
                               }
