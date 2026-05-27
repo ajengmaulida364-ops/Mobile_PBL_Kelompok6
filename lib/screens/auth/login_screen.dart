@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../admin/dashboard_admin_screen.dart';
 import '../teacher/dashboard_teacher_screen.dart';
+
+
+import '../parent/dashboard_parent_screen.dart';
+ main
 import '../../services/api_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_input.dart';
@@ -13,63 +18,56 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController loginController = TextEditingController();
 
-  final TextEditingController loginController =
-      TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  final TextEditingController passwordController =
-      TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xffF5F7FA),
 
       body: Center(
-
-        child: Padding(
-
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
 
           child: Container(
-
-            width: double.infinity,
+            width: 400,
 
             decoration: BoxDecoration(
-
               color: Colors.white,
 
               borderRadius: BorderRadius.circular(20),
 
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black12,
+                  color: Colors.black.withValues(alpha: 0.08),
+
                   blurRadius: 10,
+
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
 
             child: Column(
-
               mainAxisSize: MainAxisSize.min,
 
               children: [
-
-                // HEADER
+                /// HEADER
                 Container(
-
                   width: double.infinity,
 
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
 
                   decoration: const BoxDecoration(
-
-                    color: Color(0xFF00695C),
+                    color: Colors.teal,
 
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
+
                       topRight: Radius.circular(20),
                     ),
                   ),
@@ -79,9 +77,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-
                       Text(
-                        "Login Sistem",
+
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,
@@ -92,29 +89,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 8),
 
                       Text(
+
                         "Masuk sebagai admin, guru, atau orang tua.",
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
                         ),
+                        "Login admin, guru, atau orang tua",
+
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+
                       ),
                     ],
                   ),
                 ),
 
-                // FORM
+                /// FORM
                 Padding(
-
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
 
                   child: Column(
 
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-
                       const Text(
                         "Username",
+
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
 
@@ -122,13 +123,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       CustomInput(
                         controller: loginController,
-                        hint: "NPSN / Email / NISN",
+
+                        hint: "Masukkan username",
                       ),
 
                       const SizedBox(height: 20),
 
                       const Text(
                         "Password",
+
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
 
@@ -136,23 +139,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       CustomInput(
                         controller: passwordController,
+
                         hint: "Masukkan password",
+
                         obscureText: true,
                       ),
 
                       const SizedBox(height: 30),
 
-                      Align(
+                      SizedBox(
+                        width: double.infinity,
 
-                        alignment: Alignment.centerRight,
+                        child: CustomButton(
+                          text: isLoading ? "Loading..." : "Login",
 
-                        child: SizedBox(
+                          onPressed: () async {
+                            if (isLoading) return;
 
-                          width: 120,
+                            setState(() {
+                              isLoading = true;
+                            });
 
-                          child: CustomButton(
+                            try {
+                              print("BUTTON LOGIN DIKLIK");
 
-                            text: "Login",
+                              final result = await ApiService().login(
+                                login: loginController.text.trim(),
+
 
                             onPressed: () async {
 
@@ -174,8 +187,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                   if (result['role'] == 'teacher') {
 
-                                    Navigator.push(
-                                      context,
+                                password: passwordController.text.trim(),
+                              );
+
+                              print(result);
+
+
+                              final role = result['role']
+                                  .toString()
+                                  .trim()
+                                  .toLowerCase();
+
 
                                       MaterialPageRoute(
                                         builder: (_) =>
@@ -183,8 +205,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     );
                                   }
+=======
+                              print("ROLE: $role");
 
-                                } else {
+
+                              if (result['status'] == true) {
+                                /// ADMIN
+                                if (role == 'admin') {
+                                  print("MASUK ADMIN");
+
 
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(
@@ -193,21 +222,77 @@ class _LoginScreenState extends State<LoginScreen> {
                                         result['message'] ??
                                             "Login gagal",
                                       ),
+
+                                  Navigator.pushReplacement(
+                                    context,
+
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DashboardAdminScreen(),
+
                                     ),
                                   );
                                 }
+                                /// TEACHER
+                                else if (role == 'teacher') {
+                                  print("MASUK TEACHER");
 
-                              } catch (e) {
+                                  Navigator.pushReplacement(
+                                    context,
+
 
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(
                                   SnackBar(
                                     content: Text("Error: $e"),
+
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DashboardTeacherScreen(),
+                                    ),
+                                  );
+                                }
+                                /// PARENT
+                                else if (role == 'parent') {
+                                  print("MASUK PARENT");
+
+                                  Navigator.pushReplacement(
+                                    context,
+
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DashboardParentScreen(),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.red,
+
+                                    content: Text("Login gagal"),
+
                                   ),
                                 );
                               }
-                            },
-                          ),
+                            } catch (e) {
+                              print("ERROR LOGIN");
+
+                              print(e);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.red,
+
+                                  content: Text("Error: $e"),
+                                ),
+                              );
+                            }
+
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
                         ),
                       ),
                     ],
