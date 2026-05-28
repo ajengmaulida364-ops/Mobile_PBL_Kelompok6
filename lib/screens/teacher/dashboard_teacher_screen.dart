@@ -1,32 +1,44 @@
 import 'package:flutter/material.dart';
 import '../auth/login_screen.dart';
+import 'teacher_attendance_screen.dart';
+import 'student_attendance_screen.dart';
+import 'student_data_screen.dart';
+import 'teacher_activity_screen.dart';
+import 'teacher_development_note_input_screen.dart';
+import 'teacher_development_note_list_screen.dart';
 
 class DashboardTeacherScreen extends StatelessWidget {
-  const DashboardTeacherScreen({super.key});
+  DashboardTeacherScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     final List<Map<String, dynamic>> menus = [
+
       {
         "title": "Data Siswa",
         "subtitle": "Lihat data siswa",
         "icon": Icons.school,
       },
+
       {
         "title": "Presensi Guru",
         "subtitle": "Absen guru",
         "icon": Icons.fact_check,
       },
+
       {
         "title": "Presensi Siswa",
         "subtitle": "Input presensi",
         "icon": Icons.people,
       },
+
       {
         "title": "Kegiatan",
         "subtitle": "Kegiatan harian",
         "icon": Icons.menu_book,
       },
+
       {
         "title": "Perkembangan",
         "subtitle": "Perkembangan anak",
@@ -35,11 +47,13 @@ class DashboardTeacherScreen extends StatelessWidget {
     ];
 
     return Scaffold(
+
       backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+
         title: const Text(
           "Dashboard Guru",
           style: TextStyle(
@@ -49,6 +63,7 @@ class DashboardTeacherScreen extends StatelessWidget {
         ),
 
         actions: [
+
           Padding(
             padding: const EdgeInsets.only(right: 16),
 
@@ -64,7 +79,6 @@ class DashboardTeacherScreen extends StatelessWidget {
 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -80,44 +94,38 @@ class DashboardTeacherScreen extends StatelessWidget {
       ),
 
       body: SingleChildScrollView(
+
         padding: const EdgeInsets.all(16),
 
         child: Column(
+
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
-            /// CARD HEADER
+
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-
               decoration: BoxDecoration(
                 color: Colors.teal,
                 borderRadius: BorderRadius.circular(16),
               ),
 
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: const [
+                children: [
                   Text(
                     "KB Raudlotul Ilmi",
-
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   SizedBox(height: 8),
-
                   Text(
                     "Selamat datang, Guru 👋",
-
-                    style: TextStyle(
-                      color: Colors.white70,
-                    ),
+                    style: TextStyle(color: Colors.white70),
                   ),
                 ],
               ),
@@ -127,7 +135,6 @@ class DashboardTeacherScreen extends StatelessWidget {
 
             const Text(
               "Menu Guru",
-
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -136,8 +143,8 @@ class DashboardTeacherScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// GRID MENU
             GridView.builder(
+
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: menus.length,
@@ -151,56 +158,113 @@ class DashboardTeacherScreen extends StatelessWidget {
               ),
 
               itemBuilder: (context, index) {
+
                 final menu = menus[index];
 
-                return Container(
-                  padding: const EdgeInsets.all(16),
+                return GestureDetector(
 
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                  onTap: () {
 
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
-                      Icon(
-                        menu['icon'],
-                        size: 32,
-                        color: Colors.teal,
-                      ),
-
-                      const Spacer(),
-
-                      Text(
-                        menu['title'],
-
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                    if (menu['title'] == "Data Siswa") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const StudentDataScreen(),
                         ),
-                      ),
+                      );
+                    }
 
-                      const SizedBox(height: 4),
-
-                      Text(
-                        menu['subtitle'],
-
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
+                    else if (menu['title'] == "Presensi Guru") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const TeacherAttendanceScreen(),
                         ),
-                      ),
-                    ],
+                      );
+                    }
+
+                    else if (menu['title'] == "Presensi Siswa") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const StudentAttendanceScreen(),
+                        ),
+                      );
+                    }
+
+                    else if (menu['title'] == "Kegiatan") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TeacherActivityScreen(),
+                        ),
+                      );
+                    }
+
+                    else if (menu['title'] == "Perkembangan") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DevelopmentNoteListScreen(),
+                        ),
+                      );
+                    }
+                  },
+
+                  child: Container(
+
+                    padding: const EdgeInsets.all(16),
+
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+
+                    child: Column(
+
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+
+                        Icon(
+                          menu['icon'],
+                          size: 32,
+                          color: Colors.teal,
+                        ),
+
+                        const Spacer(),
+
+                        Text(
+                          menu['title'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        Text(
+                          menu['subtitle'],
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
