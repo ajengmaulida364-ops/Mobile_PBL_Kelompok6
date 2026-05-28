@@ -35,7 +35,17 @@ class InformasiAnakScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
 
               decoration: BoxDecoration(
-                color: Colors.teal,
+
+                gradient: const LinearGradient(
+
+                  colors: [
+                    Color(0xff0F766E),
+                    Color(0xff0284C7),
+                  ],
+
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
 
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -52,7 +62,7 @@ class InformasiAnakScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   const Text(
-                    "Budi Santoso",
+                    "AFLAHUL EL ZEHAN",
 
                     style: TextStyle(
                       color: Colors.white,
@@ -77,10 +87,23 @@ class InformasiAnakScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             /// DETAIL INFORMASI
+
             infoCard(
               icon: Icons.badge,
-              title: "Nama Anak",
-              value: "Budi Santoso",
+              title: "Nama",
+              value: "AFLAHUL EL ZEHAN",
+            ),
+
+            infoCard(
+              icon: Icons.credit_card,
+              title: "NISN",
+              value: "3221935788",
+            ),
+
+            infoCard(
+              icon: Icons.school,
+              title: "Kelas",
+              value: "A",
             ),
 
             infoCard(
@@ -90,27 +113,21 @@ class InformasiAnakScreen extends StatelessWidget {
             ),
 
             infoCard(
-              icon: Icons.cake,
-              title: "Tanggal Lahir",
-              value: "12 Mei 2021",
-            ),
-
-            infoCard(
               icon: Icons.family_restroom,
               title: "Nama Orang Tua",
-              value: "Supinik",
+              value: "SUPINIK",
             ),
 
             infoCard(
               icon: Icons.phone,
-              title: "Nomor HP",
-              value: "08123456789",
+              title: "Telepon Orang Tua",
+              value: "081234567890",
             ),
 
             infoCard(
               icon: Icons.home,
               title: "Alamat",
-              value: "Jl. Mawar No. 10",
+              value: "PASINAN TIMUR",
             ),
           ],
         ),
