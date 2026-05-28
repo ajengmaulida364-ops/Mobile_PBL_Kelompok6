@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../auth/login_screen.dart';
+
 import 'informasi_anak_screen.dart';
+import 'kegiatan_anak_screen.dart';
+import 'perkembangan_anak_screen.dart';
+import 'pembayaran_anak_screen.dart';
 
 class DashboardParentScreen extends StatelessWidget {
   const DashboardParentScreen({super.key});
@@ -12,7 +16,7 @@ class DashboardParentScreen extends StatelessWidget {
 
       {
         "title": "Informasi Anak",
-        "subtitle": "Data informasi anak",
+        "subtitle": "Data lengkap anak Anda",
         "icon": Icons.child_care,
       },
 
@@ -188,6 +192,45 @@ class DashboardParentScreen extends StatelessWidget {
                         ),
                       );
                     }
+
+                    /// KEGIATAN ANAK
+                    else if (index == 1) {
+
+                      Navigator.push(
+                        context,
+
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const KegiatanAnakScreen(),
+                        ),
+                      );
+                    }
+
+                    /// PERKEMBANGAN
+                    else if (index == 2) {
+
+                      Navigator.push(
+                        context,
+
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const PerkembanganScreen(),
+                        ),
+                      );
+                    }
+
+                    /// PEMBAYARAN
+                    else if (index == 3) {
+
+                      Navigator.push(
+                        context,
+
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const PembayaranScreen(),
+                        ),
+                      );
+                    }
                   },
 
                   child: Container(
@@ -211,7 +254,8 @@ class DashboardParentScreen extends StatelessWidget {
                     ),
 
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
 
                       children: [
 
