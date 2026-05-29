@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../auth/login_screen.dart';
 
-import 'informasi_anak_screen.dart';
-import 'kegiatan_anak_screen.dart';
-import 'perkembangan_anak_screen.dart';
-import 'pembayaran_anak_screen.dart';
+import 'child_information_screen.dart';
+import 'child_activity_screen.dart';
+import 'child_growth_screen.dart';
+import 'child_payment_screen.dart';
 
-class DashboardParentScreen extends StatelessWidget {
-  const DashboardParentScreen({super.key});
+class ParentDashboardScreen extends StatelessWidget {
+  const ParentDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +188,7 @@ class DashboardParentScreen extends StatelessWidget {
 
                         MaterialPageRoute(
                           builder: (_) =>
-                              const InformasiAnakScreen(),
+                              const ChildInformationScreen(),
                         ),
                       );
                     }
@@ -201,7 +201,7 @@ class DashboardParentScreen extends StatelessWidget {
 
                         MaterialPageRoute(
                           builder: (_) =>
-                              const KegiatanAnakScreen(),
+                              const ChildActivityScreen(),
                         ),
                       );
                     }
@@ -214,7 +214,7 @@ class DashboardParentScreen extends StatelessWidget {
 
                         MaterialPageRoute(
                           builder: (_) =>
-                              const PerkembanganScreen(),
+                              const ChildGrowthScreen(),
                         ),
                       );
                     }
@@ -227,7 +227,7 @@ class DashboardParentScreen extends StatelessWidget {
 
                         MaterialPageRoute(
                           builder: (_) =>
-                              const PembayaranScreen(),
+                              const ChildPaymentScreen(),
                         ),
                       );
                     }

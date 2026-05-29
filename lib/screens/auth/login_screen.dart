@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../admin/dashboard_admin_screen.dart';
 import '../teacher/dashboard_teacher_screen.dart';
-import '../parent/dashboard_parent_screen.dart';
+import '../parent/parent_dashboard_screen.dart';
 
 import '../../services/api_service.dart';
 
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                     MaterialPageRoute(
                                       builder: (_) =>
-                                          const DashboardParentScreen(),
+                                          const ParentDashboardScreen(),
                                     ),
                                   );
                                 }
