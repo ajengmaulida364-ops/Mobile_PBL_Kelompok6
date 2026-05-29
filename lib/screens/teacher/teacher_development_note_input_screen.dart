@@ -1,241 +1,213 @@
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
+import 'teacher_development_note_list_screen.dart';
 
-class DevelopmentNoteInputScreen extends StatefulWidget {
-  const DevelopmentNoteInputScreen({super.key});
+class TeacherDevelopmentNoteInputScreen extends StatefulWidget {
+  const TeacherDevelopmentNoteInputScreen({super.key});
 
   @override
-  State<DevelopmentNoteInputScreen> createState() =>
-      _DevelopmentNoteInputScreenState();
+  State<TeacherDevelopmentNoteInputScreen> createState() =>
+      _TeacherDevelopmentNoteInputScreenState();
 }
 
-class _DevelopmentNoteInputScreenState
-    extends State<DevelopmentNoteInputScreen> {
-  String selectedMonth = "Mei";
-  String selectedYear = "2026";
-
+class _TeacherDevelopmentNoteInputScreenState
+    extends State<TeacherDevelopmentNoteInputScreen> {
   List<Map<String, TextEditingController>> rows = [];
 
-  @override
-  void initState() {
-    super.initState();
-
-    rows = List.generate(3, (i) {
-      return {
-        "name": TextEditingController(text: "Siswa ${i + 1}"),
+  void addRow() {
+    setState(() {
+      rows.add({
+        "nama": TextEditingController(),
         "tb": TextEditingController(),
         "bb": TextEditingController(),
         "catatan": TextEditingController(),
-      };
+      });
     });
   }
 
-  void save() async {
-    final api = ApiService();
+  // =========================
+  // TAMBAHAN: SIMPAN DATA
+  // =========================
+  void saveData() {
+    final data = rows.map((row) {
+      return {
+        "nama": row["nama"]!.text,
+        "tb": row["tb"]!.text,
+        "bb": row["bb"]!.text,
+        "catatan": row["catatan"]!.text,
+      };
+    }).toList();
 
-    for (var r in rows) {
-      await api.storeDevelopment({
-        "bulan": selectedMonth,
-        "tahun": selectedYear,
-        "nama": r["name"]!.text,
-        "tb": r["tb"]!.text,
-        "bb": r["bb"]!.text,
-        "catatan": r["catatan"]!.text,
-      });
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Kegiatan berhasil disimpan")),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TeacherDevelopmentListScreen(data: data),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F3FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-        title: Text("Rekap Perkembangan Anak"),
-        centerTitle: false,
+        title: const Text("Input Perkembangan Anak"),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: TextButton(
+              onPressed: () {
+                final data = rows.map((row) {
+                  return {
+                    "nama": row["nama"]!.text,
+                    "tb": row["tb"]!.text,
+                    "bb": row["bb"]!.text,
+                    "catatan": row["catatan"]!.text,
+                  };
+                }).toList();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TeacherDevelopmentListScreen(data: data),
+                  ),
+                );
+              },
+              style: TextButton.styleFrom(
+                side: const BorderSide(color: Colors.black26),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                "Lihat Rekap",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          )
+        ],
       ),
 
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
 
-            // ===== CARD CONTAINER (LIKE WEB) =====
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEDE7FF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Row(
+              children: [
+                Expanded(child: Text("Nama Siswa")),
+                Expanded(child: Text("TB (cm)")),
+                Expanded(child: Text("BB (kg)")),
+                Expanded(child: Text("Catatan")),
+              ],
+            ),
+          ),
 
-                  Text(
-                    "Perkembangan Anak Bulanan",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+          const SizedBox(height: 10),
+
+          Expanded(
+            child: ListView.builder(
+              itemCount: rows.length,
+              itemBuilder: (context, index) {
+                final row = rows[index];
+
+                return Container(
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-
-                  SizedBox(height: 4),
-
-                  Text(
-                    "Input perkembangan seluruh siswa.",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // FILTER (bulan + tahun)
-                  Row(
+                  child: Row(
                     children: [
-
-                      // BULAN
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: selectedMonth,
-                          decoration: InputDecoration(
-                            labelText: "Bulan",
-                            border: OutlineInputBorder(),
-                          ),
-                          items: [
-                            "Januari","Februari","Maret","April","Mei",
-                            "Juni","Juli","Agustus","September","Oktober",
-                            "November","Desember"
-                          ]
-                              .map((e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Text(e),
-                                  ))
-                              .toList(),
-                          onChanged: (v) {
-                            setState(() => selectedMonth = v!);
-                          },
-                        ),
-                      ),
-
-                      SizedBox(width: 10),
-
-                      // TAHUN
                       Expanded(
                         child: TextField(
-                          decoration: InputDecoration(
-                            labelText: "Tahun",
-                            border: OutlineInputBorder(),
-                          ),
-                          controller: TextEditingController(
-                            text: selectedYear,
-                          ),
-                          onChanged: (v) => selectedYear = v,
+                          controller: row["nama"],
+                          decoration:
+                              const InputDecoration(hintText: "Nama"),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: row["tb"],
+                          decoration:
+                              const InputDecoration(hintText: "TB (cm)"),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: row["bb"],
+                          decoration:
+                              const InputDecoration(hintText: "BB (kg)"),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: row["catatan"],
+                          decoration:
+                              const InputDecoration(hintText: "Catatan"),
                         ),
                       ),
                     ],
                   ),
+                );
+              },
+            ),
+          ),
 
-                  SizedBox(height: 16),
-
-                  // HEADER TABLE
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: const [
-                        Expanded(child: Text("Nama Siswa")),
-                        Expanded(child: Text("TB (cm)")),
-                        Expanded(child: Text("BB (kg)")),
-                        Expanded(child: Text("Catatan")),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 10),
-
-                  // INPUT ROWS
-                  Column(
-                    children: rows.map((r) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          children: [
-
-                            Expanded(
-                              child: TextField(
-                                controller: r["name"],
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(width: 5),
-
-                            Expanded(
-                              child: TextField(
-                                controller: r["tb"],
-                                decoration: InputDecoration(
-                                  hintText: "TB",
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(width: 5),
-
-                            Expanded(
-                              child: TextField(
-                                controller: r["bb"],
-                                decoration: InputDecoration(
-                                  hintText: "BB",
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(width: 5),
-
-                            Expanded(
-                              child: TextField(
-                                controller: r["catatan"],
-                                decoration: InputDecoration(
-                                  hintText: "Catatan",
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                          ],
+          // =========================
+          // BUTTON BAWAH (TAMBAH + SIMPAN)
+          // =========================
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: addRow,
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.grey),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                      );
-                    }).toList(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                      ),
+                      child: const Text("+ Tambah Siswa"),
+                    ),
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(width: 10),
 
-                  // BUTTON SAVE (ORANGE LIKE WEB)
-                  SizedBox(
-                    width: double.infinity,
+                  Expanded(
                     child: ElevatedButton(
+                      onPressed: saveData,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
-                        padding: EdgeInsets.all(14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
-                      onPressed: save,
-                      child: Text("Simpan"),
+                      child: const Text(
+                        "Simpan",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
