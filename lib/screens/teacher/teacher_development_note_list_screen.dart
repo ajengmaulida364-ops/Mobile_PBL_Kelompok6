@@ -1,173 +1,265 @@
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-class DevelopmentNoteListScreen extends StatefulWidget {
-  const DevelopmentNoteListScreen({super.key});
+import 'teacher_development_note_input_screen.dart';
 
-  @override
-  State<DevelopmentNoteListScreen> createState() =>
-      _DevelopmentNoteListScreenState();
-}
+class TeacherDevelopmentListScreen extends StatelessWidget {
 
-class _DevelopmentNoteListScreenState
-    extends State<DevelopmentNoteListScreen> {
+  final List<Map<String, dynamic>> data;
 
-  List data = [];
-  bool loading = true;
-  String? selectedStudentId;
+  const TeacherDevelopmentListScreen({
+    super.key,
+    required this.data,
+  });
 
-  String selectedYear = "2025";
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
-void load() async {
-  try {
-    setState(() => loading = true);
-
-    final api = ApiService();
-    final res = await api.getDevelopment(
-  year: selectedYear,
-  studentId: "1",
-);
-
-    print("RAW RESPONSE => $res");
-
-    List result = [];
-
-    if (res is Map<String, dynamic>) {
-      if (res['data'] != null) {
-        result = List.from(res['data']);
-      }
-    } 
-    else if (res is List) {
-      result = res;
-    }
-
-    setState(() {
-      data = result;
-      loading = false;
-    });
-
-  } catch (e) {
-    print("ERROR LOAD: $e");
-
-    setState(() {
-      loading = false;
-      data = [];
-    });
-  }
-}
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F7),
+
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-        title: const Text("Rekap Perkembangan Anak"),
+
+        title: const Text(
+          "Rekap Perkembangan Anak",
+        ),
+
+        backgroundColor: Colors.white,
+
+        foregroundColor: Colors.black,
+
+        elevation: 0,
       ),
 
-      body: loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
+      body: SingleChildScrollView(
+
+        padding: const EdgeInsets.all(16),
+
+        child: Column(
+
+          children: [
+
+            // ===== FILTER =====
+
+            Row(
+
               children: [
 
-                const SizedBox(height: 16),
+                Expanded(
 
-                // ===== HEADER =====
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      const Text(
-                        "Tahun",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                  child: DropdownButtonFormField<String>(
 
-                      const SizedBox(width: 10),
+                    decoration: const InputDecoration(
 
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedYear,
-                            items: ["2024", "2025", "2026"]
-                                .map((e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Text(e),
-                                    ))
-                                .toList(),
-                            onChanged: (v) {
-                              setState(() {
-                                selectedYear = v!;
-                              });
-                              load();
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
+                      labelText: "Bulan",
+
+                      border: OutlineInputBorder(),
+                    ),
+
+                    items: const [],
+
+                    onChanged: (v) {},
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(width: 10),
 
-                // ===== LIST =====
                 Expanded(
-                  child: data.isEmpty
-                      ? const Center(
-                          child: Text("Belum ada data perkembangan"),
-                        )
-                      : ListView.builder(
-                          itemCount: data.length,
-                          itemBuilder: (context, i) {
-                            final item = data[i];
 
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 6,
-                                  )
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item['bulan'] ?? '-',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text("TB: ${item['tb']} cm"),
-                                  Text("BB: ${item['bb']} kg"),
-                                  Text("Catatan: ${item['catatan']}"),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                  child: TextFormField(
+
+                    decoration: const InputDecoration(
+
+                      labelText: "Tahun",
+
+                      border: OutlineInputBorder(),
+                    ),
+
+                    initialValue: "2026",
+                  ),
                 ),
               ],
             ),
+
+            const SizedBox(height: 16),
+
+            // ===== BUTTON INPUT (SUDAH DIUBAH TRANSPARAN) =====
+
+            Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                height: 45,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const TeacherDevelopmentNoteInputScreen(),
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.black26),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  child: const Text(
+                    "Input Perkembangan",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ===== GRAFIK TB =====
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Tinggi Badan",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            SizedBox(
+              height: 220,
+              child: LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: true),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  titlesData: const FlTitlesData(show: true),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: const [
+                        FlSpot(0, 120),
+                        FlSpot(1, 125),
+                        FlSpot(2, 130),
+                        FlSpot(3, 128),
+                      ],
+                      isCurved: true,
+                      color: Colors.blue,
+                      barWidth: 3,
+                      dotData: const FlDotData(show: true),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ===== GRAFIK BB =====
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Berat Badan",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            SizedBox(
+              height: 220,
+              child: LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: true),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  titlesData: const FlTitlesData(show: true),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: const [
+                        FlSpot(0, 20),
+                        FlSpot(1, 22),
+                        FlSpot(2, 24),
+                        FlSpot(3, 25),
+                      ],
+                      isCurved: true,
+                      color: Colors.green,
+                      barWidth: 3,
+                      dotData: const FlDotData(show: true),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ===== HEADER TABLE =====
+
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEDE7FF),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                children: [
+                  Expanded(child: Text("Nama Siswa")),
+                  Expanded(child: Text("TB (cm)")),
+                  Expanded(child: Text("BB (kg)")),
+                  Expanded(child: Text("Catatan")),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ===== DATA =====
+
+            data.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text("Belum ada data perkembangan."),
+                  )
+                : Column(
+                    children: data.map((item) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(child: Text(item['nama'] ?? '-')),
+                            Expanded(child: Text("${item['tb']} cm")),
+                            Expanded(child: Text("${item['bb']} kg")),
+                            Expanded(child: Text(item['catatan'] ?? '-')),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }
