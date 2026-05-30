@@ -380,18 +380,25 @@ class _ChildActivityScreenState
           const SizedBox(height: 16),
 
           ClipRRect(
-            borderRadius:
-                BorderRadius.circular(20),
+  borderRadius: BorderRadius.circular(20),
 
-            child: Image.network(
-              image,
-
-              width: double.infinity,
-              height: 220,
-
-              fit: BoxFit.cover,
-            ),
+  child: image.isNotEmpty
+      ? Image.network(
+          image,
+          width: double.infinity,
+          height: 220,
+          fit: BoxFit.cover,
+        )
+      : Container(
+          width: double.infinity,
+          height: 220,
+          color: Colors.grey.shade200,
+          child: const Icon(
+            Icons.image_not_supported,
+            size: 60,
           ),
+        ),
+),
 
           const SizedBox(height: 16),
 
