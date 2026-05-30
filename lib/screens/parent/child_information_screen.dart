@@ -121,7 +121,7 @@ class _ChildInformationScreenState
                       const SizedBox(height: 8),
 
                       Text(
-                        profile['class'] ?? '-',
+                        profile['school_class']?['name'] ?? '-',
 
                         style: const TextStyle(
                           color: Colors.white70,
@@ -150,7 +150,7 @@ class _ChildInformationScreenState
                 infoCard(
                   icon: Icons.school,
                   title: "Kelas",
-                  value: profile['class'] ?? '-',
+                  value: profile['school_class']?['name'] ?? '-',
                 ),
 
                 infoCard(
