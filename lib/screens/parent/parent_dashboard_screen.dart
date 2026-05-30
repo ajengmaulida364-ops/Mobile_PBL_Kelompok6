@@ -5,6 +5,7 @@ import 'child_information_screen.dart';
 import 'child_activity_screen.dart';
 import 'child_growth_screen.dart';
 import 'child_payment_screen.dart';
+import '../../core/utils/user_session.dart';
 
 class ParentDashboardScreen extends StatelessWidget {
   const ParentDashboardScreen({super.key});
@@ -115,7 +116,7 @@ class ParentDashboardScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
 
-                children: const [
+                children: [
 
                   Text(
                     "KB Raudlotul Ilmi",
@@ -130,9 +131,9 @@ class ParentDashboardScreen extends StatelessWidget {
                   SizedBox(height: 8),
 
                   Text(
-                    "Selamat datang, Orang Tua 👋",
+                    "Selamat datang, ${UserSession.name}👋",
 
-                    style: TextStyle(
+                    style:const TextStyle(
                       color: Colors.white70,
                     ),
                   ),

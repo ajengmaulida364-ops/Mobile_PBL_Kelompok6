@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../services/parent/profile_service.dart';
 import '../../services/parent/payment_service.dart';
+
 
 class ChildPaymentScreen extends StatefulWidget {
   const ChildPaymentScreen({super.key});
@@ -13,14 +15,18 @@ class _ChildPaymentScreenState
     extends State<ChildPaymentScreen> {
 
   late Future<List<dynamic>> paymentsFuture;
+  late Future<Map<String, dynamic>> profileFuture;
 
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
 
-    paymentsFuture =
-        PaymentService().getPayments();
-  }
+  paymentsFuture =
+      PaymentService().getPayments();
+
+  profileFuture =
+      ProfileService().getProfile();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +141,7 @@ class _ChildPaymentScreenState
                 children: [
 
                   const Text(
-                    "Informasi Tagihan",
+                    "Informasi Pembayaran",
 
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -145,35 +151,52 @@ class _ChildPaymentScreenState
 
                   const SizedBox(height: 18),
 
-                  infoRow(
-                    "Nama Siswa",
-                    "AFLAHUL EL ZEHAN",
-                  ),
+                  FutureBuilder<Map<String, dynamic>>(
+  future: profileFuture,
+  builder: (context, snapshot) {
 
-                  infoRow(
-                    "NISN",
-                    "3221935788",
-                  ),
+    if (!snapshot.hasData) {
+      return const SizedBox();
+    }
 
-                  infoRow(
-                    "Nama Orang Tua",
-                    "SUPINIK",
-                  ),
+    final profile = snapshot.data!;
 
-                  infoRow(
-                    "Kelas",
-                    "A",
-                  ),
+    return Column(
+      children: [
 
-                  infoRow(
-                    "Tahun Ajaran",
-                    "2026/2027",
-                  ),
+        infoRow(
+          "Nama Siswa",
+          profile['name'] ?? '-',
+        ),
+
+        infoRow(
+          "NISN",
+          profile['nisn'] ?? '-',
+        ),
+
+        infoRow(
+          "Nama Orang Tua",
+          profile['parent_name'] ?? '-',
+        ),
+
+        infoRow(
+          "Kelas",
+          profile['school_class']?['name'] ?? '-',
+        ),
+
+        infoRow(
+          "Tahun Ajaran",
+          "2026/2027",
+        ),
+      ],
+    );
+  },
+),
 
                   const Divider(height: 32),
 
                   const Text(
-                    "Total Tagihan",
+                    "Total Sudah Dibayar",
 
                     style: TextStyle(
                       color: Colors.grey,
@@ -183,15 +206,43 @@ class _ChildPaymentScreenState
 
                   const SizedBox(height: 8),
 
-                  const Text(
-                    "Rp 60.000",
+                  FutureBuilder<List<dynamic>>(
+  future: paymentsFuture,
+  builder: (context, snapshot) {
 
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 32,
-                      color: Color(0xff0F172A),
-                    ),
-                  ),
+    if (!snapshot.hasData ||
+        snapshot.data!.isEmpty) {
+
+      return const Text(
+        "Rp 0",
+
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 32,
+          color: Color(0xff0F172A),
+        ),
+      );
+    }
+
+    final payments = snapshot.data!;
+
+    final total = payments.fold<int>(
+      0,
+      (sum, item) =>
+          sum + (item['jumlah'] as int),
+    );
+
+    return Text(
+      "Rp $total",
+
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 32,
+        color: Color(0xff0F172A),
+      ),
+    );
+  },
+),
                 ],
               ),
             ),
@@ -235,6 +286,8 @@ class _ChildPaymentScreenState
                 }
 
                 final payments = snapshot.data!;
+
+        
 
                 return ListView.builder(
                   shrinkWrap: true,
