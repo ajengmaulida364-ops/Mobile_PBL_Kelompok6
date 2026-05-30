@@ -15,6 +15,12 @@ class _ChildActivityScreenState
 
   late Future<List<dynamic>> activityFuture;
 
+String? selectedDate;
+
+TextEditingController
+    dateController =
+        TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -22,6 +28,41 @@ class _ChildActivityScreenState
     activityFuture =
         ActivityService().getActivities();
   }
+
+Future<void> pickDate() async {
+
+  final picked =
+      await showDatePicker(
+
+    context: context,
+
+    initialDate:
+        DateTime.now(),
+
+    firstDate:
+        DateTime(2020),
+
+    lastDate:
+        DateTime(2035),
+  );
+
+  if (picked == null) {
+    return;
+  }
+
+  final date =
+
+      "${picked.day.toString().padLeft(2,'0')}/"
+      "${picked.month.toString().padLeft(2,'0')}/"
+      "${picked.year}";
+
+  setState(() {
+
+    selectedDate = date;
+
+    dateController.text = date;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +205,13 @@ class _ChildActivityScreenState
 
                       Expanded(
                         child: TextField(
+                          controller: 
+                            dateController,
 
+                            readOnly: true,
+                            onTap: pickDate,
+                            
+        
                           decoration: InputDecoration(
 
                             hintText:
@@ -232,7 +279,17 @@ class _ChildActivityScreenState
                         height: 50,
 
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+
+                            setState(() {
+
+                              activityFuture =
+                                  ActivityService()
+                                      .getActivities(
+                                date: selectedDate,
+                              );
+                            });
+                          },
 
                           style:
                               ElevatedButton
@@ -383,23 +440,41 @@ class _ChildActivityScreenState
   borderRadius: BorderRadius.circular(20),
 
   child: image.isNotEmpty
-      ? Image.network(
-          image,
-          width: double.infinity,
-          height: 220,
-          fit: BoxFit.cover,
-        )
-      : Container(
-          width: double.infinity,
-          height: 220,
-          color: Colors.grey.shade200,
-          child: const Icon(
-            Icons.image_not_supported,
-            size: 60,
-          ),
-        ),
-),
+    ? Image.network(
+        image,
+        width: double.infinity,
+        height: 220,
+        fit: BoxFit.cover,
 
+        errorBuilder: (
+          context,
+          error,
+          stackTrace,
+        ) {
+
+          print(error);
+
+          return Container(
+            height: 220,
+            alignment: Alignment.center,
+
+            child: Text(
+              error.toString(),
+            ),
+          );
+        },
+      )
+    : Container(
+        width: double.infinity,
+        height: 220,
+        color: Colors.grey.shade200,
+
+        child: const Icon(
+          Icons.image_not_supported,
+          size: 60,
+        ),
+      ),
+    ),
           const SizedBox(height: 16),
 
           Row(

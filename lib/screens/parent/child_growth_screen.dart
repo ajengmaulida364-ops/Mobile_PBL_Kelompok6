@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:fl_chart/fl_chart.dart';
 import '../../services/parent/growth_service.dart';
 
 class ChildGrowthScreen extends StatefulWidget {
@@ -13,6 +14,28 @@ class ChildGrowthScreen extends StatefulWidget {
 class _ChildGrowthScreenState
     extends State<ChildGrowthScreen> {
 
+String? selectedMonth;
+String? selectedYear;
+
+String displayDate = 'Pilih Bulan';
+final List<String> months = [
+
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+
+  'Mei',
+  'Jun',
+  'Jul',
+  'Agu',
+
+  'Sep',
+  'Okt',
+  'Nov',
+  'Des',
+];
+
   late Future<List<dynamic>> growthFuture;
 
   @override
@@ -22,6 +45,164 @@ class _ChildGrowthScreenState
     growthFuture =
         GrowthService().getGrowths();
   }
+
+Future<void> pickMonthYear() async {
+
+  int selectedYearTemp =
+      DateTime.now().year;
+
+  await showDialog(
+    context: context,
+
+    builder: (context) {
+
+      return StatefulBuilder(
+
+        builder: (
+          context,
+          setDialogState,
+        ) {
+
+          return AlertDialog(
+
+            title: const Text(
+              'Pilih Bulan',
+            ),
+
+            content: SizedBox(
+
+              width: 320,
+
+              child: Column(
+
+                mainAxisSize:
+                    MainAxisSize.min,
+
+                children: [
+
+                  DropdownButton<int>(
+
+                    value:
+                        selectedYearTemp,
+
+                    isExpanded: true,
+
+                    items:
+                        List.generate(
+                      16,
+                      (index) {
+
+                        final year =
+                            2020 +
+                                index;
+
+                        return DropdownMenuItem(
+                          value: year,
+
+                          child: Text(
+                            year.toString(),
+                          ),
+                        );
+                      },
+                    ),
+
+                    onChanged:
+                        (value) {
+
+                      if (value == null) {
+                        return;
+                      }
+
+                      setDialogState(() {
+
+                        selectedYearTemp =
+                            value;
+                      });
+                    },
+                  ),
+
+                  const SizedBox(
+                    height: 20,
+                  ),
+
+                  GridView.builder(
+
+                    shrinkWrap: true,
+
+                    itemCount:
+                        months.length,
+
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+
+                      crossAxisCount: 3,
+
+                      mainAxisSpacing: 8,
+
+                      crossAxisSpacing: 8,
+                    ),
+
+                    itemBuilder:
+                        (
+                      context,
+                      index,
+                    ) {
+
+                      return ElevatedButton(
+
+                        onPressed: () {
+
+                          setState(() {
+
+                            selectedMonth =
+                                (index + 1).toString();
+
+                            selectedYear =
+                                selectedYearTemp.toString();
+
+                            displayDate =
+                                "${months[index]} $selectedYearTemp";
+                          });
+
+                          Navigator.pop(context);
+                        },
+
+                        style: ElevatedButton.styleFrom(
+
+                          padding: EdgeInsets.zero,
+
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(12),
+                          ),
+                        ),
+
+                        child: FittedBox(
+
+                          fit: BoxFit.scaleDown,
+
+                          child: Text(
+                            months[index],
+
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight:
+                                  FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -201,18 +382,18 @@ class _ChildGrowthScreenState
                                   width: 12),
 
                               Expanded(
-                                child:
-                                    TextFormField(
-                                  readOnly: true,
+                                child: InkWell(
+                                  onTap: pickMonthYear,
 
-                                  decoration:
-                                      const InputDecoration(
-                                    hintText:
-                                        "May 2026",
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
 
-                                    border:
-                                        InputBorder
-                                            .none,
+                                    child: Text(
+                                      displayDate,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -242,7 +423,23 @@ class _ChildGrowthScreenState
                         height: 54,
 
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+
+                            if (selectedMonth == null ||
+                                selectedYear == null) {
+                              return;
+                            }
+
+                            setState(() {
+
+                              growthFuture =
+                                  GrowthService()
+                                      .getGrowths(
+                                month: selectedMonth,
+                                year: selectedYear,
+                              );
+                            });
+                          },
 
                           style:
                               ElevatedButton
@@ -321,24 +518,17 @@ class _ChildGrowthScreenState
 
                 /// CHART TB
                 chartCard(
-                  title:
-                      "Grafik Tinggi Badan",
-
-                  value:
-                      growths.first['tb'] ??
-                          '-',
+                  title: "Grafik Tinggi Badan",
+                  growths: growths,
+                  field: 'tb',
                 ),
-
                 const SizedBox(height: 22),
 
                 /// CHART BB
                 chartCard(
-                  title:
-                      "Grafik Berat Badan",
-
-                  value:
-                      growths.first['bb'] ??
-                          '-',
+                  title: "Grafik Berat Badan",
+                  growths: growths,
+                  field: 'bb',
                 ),
 
                 const SizedBox(height: 28),
@@ -429,6 +619,19 @@ class _ChildGrowthScreenState
                           ),
 
                           const SizedBox(
+                              height: 12),
+
+                          Text(
+                            item['description'] ??
+                                '-',
+
+                            style:
+                                const TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+
+                          const SizedBox(
                               height: 20),
 
                           infoRow(
@@ -462,72 +665,67 @@ class _ChildGrowthScreenState
     );
   }
 
+  
   Widget chartCard({
     required String title,
-    required String value,
+    required List<dynamic> growths,
+    required String field,
   }) {
+
+    final spots = <FlSpot>[];
+
+    for (int i = 0; i < growths.length; i++) {
+      final value = double.tryParse(
+        growths[i][field].toString(),
+      ) ?? 0;
+
+      spots.add(
+        FlSpot(
+          i.toDouble(),
+          value,
+        ),
+      );
+    }
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-
       decoration: BoxDecoration(
         color: Colors.white,
-
-        borderRadius:
-            BorderRadius.circular(20),
-
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
-
           BoxShadow(
-            color: Colors.grey
-                .withValues(alpha: 0.08),
-
+            color: Colors.grey.withValues(alpha: 0.08),
             blurRadius: 8,
-
             offset: const Offset(0, 4),
           ),
         ],
       ),
-
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Text(
             title,
-
             style: const TextStyle(
-              fontWeight:
-                  FontWeight.bold,
+              fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
-
-          const SizedBox(height: 24),
-
-          Container(
-            height: 160,
-
-            decoration: BoxDecoration(
-              color: const Color(
-                  0xffF8FAFC),
-
-              borderRadius:
-                  BorderRadius.circular(
-                      16),
-            ),
-
-            child: Center(
-              child: Text(
-                "Chart $value",
-
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 220,
+            child: LineChart(
+              LineChartData(
+                gridData: const FlGridData(show: true),
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    dotData: const FlDotData(show: true),
+                    belowBarData: BarAreaData(show: false),
+                  ),
+                ],
               ),
             ),
           ),
@@ -536,7 +734,7 @@ class _ChildGrowthScreenState
     );
   }
 
-  Widget infoRow({
+Widget infoRow({
     required IconData icon,
     required String text,
   }) {
