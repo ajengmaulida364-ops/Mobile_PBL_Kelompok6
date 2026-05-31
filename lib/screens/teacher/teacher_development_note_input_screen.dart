@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'teacher_development_note_list_screen.dart';
+import '../../services/teacher/teacher_development_note_service.dart';
 
 class TeacherDevelopmentNoteInputScreen extends StatefulWidget {
   const TeacherDevelopmentNoteInputScreen({super.key});
@@ -27,20 +28,36 @@ class _TeacherDevelopmentNoteInputScreenState
   // =========================
   // TAMBAHAN: SIMPAN DATA
   // =========================
-  void saveData() {
-    final data = rows.map((row) {
-      return {
-        "nama": row["nama"]!.text,
-        "tb": row["tb"]!.text,
-        "bb": row["bb"]!.text,
-        "catatan": row["catatan"]!.text,
-      };
-    }).toList();
+  Future<void> saveData() async {
+    bool success = true;
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => TeacherDevelopmentListScreen(data: data),
+    for (final row in rows) {
+      final result = await TeacherDevelopmentService.createDevelopmentNote(
+        studentId: 1,
+        teacherId: 1,
+        month: 5,
+        year: 2026,
+        description: row["catatan"]!.text,
+        tb: double.tryParse(
+          row["tb"]!.text,
+        ),
+        bb: double.tryParse(
+          row["bb"]!.text,
+        ),
+      );
+
+      if (!result) {
+        success = false;
+      }
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success ? 'Data berhasil disimpan' : 'Gagal menyimpan',
+        ),
       ),
     );
   }
@@ -49,30 +66,26 @@ class _TeacherDevelopmentNoteInputScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
-
       appBar: AppBar(
         title: const Text("Input Perkembangan Anak"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: TextButton(
-              onPressed: () {
-                final data = rows.map((row) {
-                  return {
-                    "nama": row["nama"]!.text,
-                    "tb": row["tb"]!.text,
-                    "bb": row["bb"]!.text,
-                    "catatan": row["catatan"]!.text,
-                  };
-                }).toList();
+              onPressed: () async {
+                final data =
+                    await TeacherDevelopmentService.getDevelopmentNotes();
+
+                if (!mounted) return;
 
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => TeacherDevelopmentListScreen(data: data),
+                    builder: (_) => TeacherDevelopmentListScreen(
+                      data: List<Map<String, dynamic>>.from(data),
+                    ),
                   ),
                 );
               },
@@ -84,13 +97,14 @@ class _TeacherDevelopmentNoteInputScreenState
               ),
               child: const Text(
                 "Lihat Rekap",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
               ),
             ),
           )
         ],
       ),
-
       body: Column(
         children: [
           const SizedBox(height: 10),
@@ -131,8 +145,7 @@ class _TeacherDevelopmentNoteInputScreenState
                       Expanded(
                         child: TextField(
                           controller: row["nama"],
-                          decoration:
-                              const InputDecoration(hintText: "Nama"),
+                          decoration: const InputDecoration(hintText: "Nama"),
                         ),
                       ),
                       Expanded(
@@ -185,9 +198,7 @@ class _TeacherDevelopmentNoteInputScreenState
                       child: const Text("+ Tambah Siswa"),
                     ),
                   ),
-
                   const SizedBox(width: 10),
-
                   Expanded(
                     child: ElevatedButton(
                       onPressed: saveData,
