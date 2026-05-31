@@ -1,42 +1,100 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/admin/rekap_service.dart';
 import 'rekap_teacher_detail_screen.dart';
 
 class RekapTeacherScreen
-    extends StatelessWidget {
+    extends StatefulWidget {
 
   const RekapTeacherScreen({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  State<RekapTeacherScreen>
+      createState() =>
+          _RekapTeacherScreenState();
+}
 
-    final List teachers = [
+class _RekapTeacherScreenState
+    extends State<RekapTeacherScreen> {
 
-      {
-        "name": "Widyawati, S.Pd",
-        "hadir": 20,
-        "izin": 1,
-        "cuti": 0,
-        "sakit": 1,
-        "total": 22,
-      },
+  List teachers = [];
 
-      {
-        "name": "Guru PAUD",
-        "hadir": 18,
-        "izin": 2,
-        "cuti": 1,
-        "sakit": 1,
-        "total": 22,
-      },
-    ];
+  List filteredTeachers = [];
+
+  bool isLoading = true;
+
+  final searchController =
+      TextEditingController();
+
+  @override
+  void initState() {
+
+    super.initState();
+
+    loadData();
+  }
+
+  Future<void> loadData()
+  async {
+
+    try {
+
+      final data =
+          await RekapService()
+              .getRekapGuru();
+
+      setState(() {
+
+        teachers = data;
+
+        filteredTeachers =
+            data;
+
+        isLoading = false;
+      });
+
+    } catch (e) {
+
+      print(e);
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
+  void searchTeacher(
+      String keyword) {
+
+    setState(() {
+
+      filteredTeachers =
+          teachers.where((item) {
+
+        return item['name']
+            .toString()
+            .toLowerCase()
+            .contains(
+              keyword
+                  .toLowerCase(),
+            );
+
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(
+      BuildContext context) {
 
     return Scaffold(
 
       backgroundColor:
-          const Color(0xffF5F7FA),
+          const Color(
+              0xffF5F7FA),
 
       appBar: AppBar(
 
@@ -53,232 +111,231 @@ class RekapTeacherScreen
         ),
       ),
 
-      body: Padding(
+      body: isLoading
 
-        padding:
-            const EdgeInsets.all(16),
-
-        child: Column(
-
-          children: [
-
-            TextField(
-
-              decoration:
-                  InputDecoration(
-
-                hintText:
-                    "Cari nama guru...",
-
-                prefixIcon:
-                    const Icon(
-                  Icons.search,
-                ),
-
-                filled: true,
-
-                fillColor:
-                    Colors.white,
-
-                border:
-                    OutlineInputBorder(
-
-                  borderRadius:
-                      BorderRadius
-                          .circular(
-                              14),
-
-                  borderSide:
-                      BorderSide.none,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Expanded(
-
+          ? const Center(
               child:
-                  ListView.builder(
+                  CircularProgressIndicator(),
+            )
 
-                itemCount:
-                    teachers.length,
+          : Padding(
 
-                itemBuilder:
-                    (context, index) {
+              padding:
+                  const EdgeInsets
+                      .all(16),
 
-                  final item =
-                      teachers[index];
+              child: Column(
 
-                  return Container(
+                children: [
 
-                    margin:
-                        const EdgeInsets
-                            .only(
-                                bottom:
-                                    16),
+                  TextField(
 
-                    padding:
-                        const EdgeInsets
-                            .all(18),
+                    controller:
+                        searchController,
+
+                    onChanged:
+                        searchTeacher,
 
                     decoration:
-                        BoxDecoration(
+                        InputDecoration(
 
-                      color:
+                      hintText:
+                          "Cari nama guru...",
+
+                      prefixIcon:
+                          const Icon(
+                        Icons.search,
+                      ),
+
+                      filled: true,
+
+                      fillColor:
                           Colors.white,
 
-                      borderRadius:
-                          BorderRadius.circular(
-                              18),
+                      border:
+                          OutlineInputBorder(
 
-                      boxShadow: [
+                        borderRadius:
+                            BorderRadius.circular(
+                                14),
 
-                        BoxShadow(
-                          color: Colors
-                              .black
-                              .withOpacity(
-                                  0.05),
-
-                          blurRadius:
-                              6,
-
-                          offset:
-                              const Offset(
-                                  0,
-                                  4),
-                        ),
-                      ],
+                        borderSide:
+                            BorderSide.none,
+                      ),
                     ),
+                  ),
 
-                    child: Column(
+                  const SizedBox(
+                      height: 20),
 
-                      crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
+                  Expanded(
 
-                      children: [
+                    child:
+                        ListView.builder(
 
-                        Text(
+                      itemCount:
+                          filteredTeachers
+                              .length,
 
-                          item['name'],
+                      itemBuilder:
+                          (
+                        context,
+                        index,
+                      ) {
 
-                          style:
-                              const TextStyle(
+                        final item =
+                            filteredTeachers[
+                                index];
 
-                            fontSize: 18,
+                        return Container(
 
-                            fontWeight:
-                                FontWeight.bold,
+                          margin:
+                              const EdgeInsets
+                                  .only(
+                                      bottom:
+                                          16),
+
+                          padding:
+                              const EdgeInsets
+                                  .all(
+                                      18),
+
+                          decoration:
+                              BoxDecoration(
+
+                            color:
+                                Colors.white,
+
+                            borderRadius:
+                                BorderRadius.circular(
+                                    18),
                           ),
-                        ),
-
-                        const SizedBox(
-                            height:
-                                16),
-
-                        Row(
-
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-
-                          children: [
-
-                            _info(
-                              "Hadir",
-                              item[
-                                      'hadir']
-                                  .toString(),
-                              Colors.green,
-                            ),
-
-                            _info(
-                              "Izin",
-                              item[
-                                      'izin']
-                                  .toString(),
-                              Colors.orange,
-                            ),
-
-                            _info(
-                              "Cuti",
-                              item[
-                                      'cuti']
-                                  .toString(),
-                              Colors.blue,
-                            ),
-
-                            _info(
-                              "Sakit",
-                              item[
-                                      'sakit']
-                                  .toString(),
-                              Colors.red,
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(
-                            height:
-                                16),
-
-                        SizedBox(
-
-                          width: double.infinity,
 
                           child:
-                              ElevatedButton(
+                              Column(
 
-                            style:
-                                ElevatedButton.styleFrom(
+                            crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
 
-                              backgroundColor:
-                                  Colors.teal,
-                            ),
+                            children: [
 
-                            onPressed:
-                                () {
+                              Text(
 
-                              Navigator.push(
+                                item[
+                                    'name'],
 
-                                context,
+                                style:
+                                    const TextStyle(
 
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) =>
-                                          RekapTeacherDetailScreen(
-                                    teacher:
-                                        item,
+                                  fontSize:
+                                      18,
+
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(
+                                  height:
+                                      16),
+
+                              Row(
+
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+
+                                children: [
+
+                                  _info(
+                                    "Hadir",
+                                    item['hadir']
+                                        .toString(),
+                                    Colors.green,
+                                  ),
+
+                                  _info(
+                                    "Izin",
+                                    item['izin']
+                                        .toString(),
+                                    Colors.orange,
+                                  ),
+
+                                  _info(
+                                    "Sakit",
+                                    item['sakit']
+                                        .toString(),
+                                    Colors.blue,
+                                  ),
+
+                                  _info(
+                                    "Alpha",
+                                    item['alpha']
+                                        .toString(),
+                                    Colors.red,
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(
+                                  height:
+                                      16),
+
+                              SizedBox(
+
+                                width:
+                                    double.infinity,
+
+                                child:
+                                    ElevatedButton(
+
+                                  style:
+                                      ElevatedButton.styleFrom(
+
+                                    backgroundColor:
+                                        Colors.teal,
+                                  ),
+
+                                  onPressed:
+                                      () {
+
+                                    Navigator.push(
+
+                                      context,
+
+                                      MaterialPageRoute(
+
+                                        builder:
+                                            (_) =>
+                                                RekapTeacherDetailScreen(
+                                          teacher:
+                                              item,
+                                        ),
+                                      ),
+                                    );
+                                  },
+
+                                  child:
+                                      const Text(
+                                    "Detail",
                                   ),
                                 ),
-                              );
-                            },
-
-                            child:
-                                const Text(
-                              "Detail",
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
   Widget _info(
-
     String title,
-
     String value,
-
     Color color,
   ) {
 
@@ -290,11 +347,14 @@ class RekapTeacherScreen
 
           value,
 
-          style: TextStyle(
+          style:
+              TextStyle(
 
-            color: color,
+            color:
+                color,
 
-            fontSize: 22,
+            fontSize:
+                22,
 
             fontWeight:
                 FontWeight.bold,
