@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import '../../core/utils/user_session.dart';
 
 class PaymentService {
 
@@ -9,7 +10,7 @@ class PaymentService {
     final response = await http.get(
 
       Uri.parse(
-        'http://127.0.0.1:8000/api/parent/payments',
+        'http://127.0.0.1:8000/api/parent/payments?nisn=${UserSession.username}',
       ),
 
       headers: {

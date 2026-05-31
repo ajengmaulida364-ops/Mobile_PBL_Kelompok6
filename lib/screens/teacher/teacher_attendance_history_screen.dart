@@ -1,126 +1,147 @@
 import 'package:flutter/material.dart';
+import '../../services/teacher/teacher_attendance_service.dart';
 
-class TeacherAttendanceHistoryScreen extends StatelessWidget {
+class TeacherAttendanceHistoryScreen extends StatefulWidget {
   const TeacherAttendanceHistoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> histories = [
-      {
-        "date": "24 Mei 2026",
-        "status": "Hadir",
-        "note": "Masuk tepat waktu",
-      },
-      {
-        "date": "23 Mei 2026",
-        "status": "Izin",
-        "note": "Sakit demam",
-      },
-      {
-        "date": "22 Mei 2026",
-        "status": "Hadir",
-        "note": "Mengajar kelas A",
-      },
-    ];
+  State<TeacherAttendanceHistoryScreen> createState() =>
+      _TeacherAttendanceHistoryScreenState();
+}
 
+class _TeacherAttendanceHistoryScreenState
+    extends State<TeacherAttendanceHistoryScreen> {
+  List<dynamic> histories = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    final data = await TeacherAttendanceService.getAttendances();
+
+    setState(() {
+      histories = data;
+      isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-
         title: const Text(
           "Riwayat Presensi Guru",
-
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : histories.isEmpty
+              ? const Center(
+                  child: Text("Belum ada data presensi"),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: histories.length,
+                  itemBuilder: (context, index) {
+                    final history = histories[index];
 
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: histories.length,
+                    final date = DateTime.parse(history['date']);
 
-        itemBuilder: (context, index) {
-          final history = histories[index];
+                    const bulan = [
+                      '',
+                      'Jan',
+                      'Feb',
+                      'Mar',
+                      'Apr',
+                      'Mei',
+                      'Jun',
+                      'Jul',
+                      'Agu',
+                      'Sep',
+                      'Okt',
+                      'Nov',
+                      'Des',
+                    ];
 
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(16),
+                    final tanggal =
+                        '${date.day} ${bulan[date.month]} ${date.year}';
 
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+                    final checkIn = history['check_in'];
+                    final checkOut = history['check_out'];
 
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Text(
-                  history['date'],
-
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: history['status'] == "Hadir"
-                            ? Colors.green
-                            : Colors.orange,
-
-                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withValues(alpha: 0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-
-                      child: Text(
-                        history['status'],
-
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tanggal,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              "Hadir",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "Masuk : ${checkIn ?? '-'}",
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            "Pulang : ${checkOut ?? '-'}",
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  history['note'],
-
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
 }

@@ -38,7 +38,7 @@ class _TeacherActivityHistoryScreenState
 
   List<Map<String, dynamic>> get filteredData {
     return widget.data.where((item) {
-      final tanggal = item["tanggal"].toString();
+      final tanggal = item["date"].toString();
 
       final matchYear = tanggal.contains(selectedYear);
 
@@ -53,8 +53,7 @@ class _TeacherActivityHistoryScreenState
     Map<String, List<Map<String, dynamic>>> map = {};
 
     for (var item in filteredData) {
-      String date = item["tanggal"];
-
+      String date = item["date"].toString();
       if (!map.containsKey(date)) {
         map[date] = [];
       }
@@ -161,13 +160,15 @@ class _TeacherActivityHistoryScreenState
                                 ),
                               ),
                               const SizedBox(height: 12),
-
                               ...items.map((item) {
                                 return Column(
                                   children: [
-                                    _chip("P1", item["p1"], Colors.purple),
-                                    _chip("P2", item["p2"], Colors.green),
-                                    _chip("P3", item["p3"], Colors.orange),
+                                    _chip("P1", item["activity_1"],
+                                        Colors.purple),
+                                    _chip(
+                                        "P2", item["activity_2"], Colors.green),
+                                    _chip("P3", item["activity_3"],
+                                        Colors.orange),
                                     const SizedBox(height: 10),
                                   ],
                                 );
