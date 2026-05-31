@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/admin/rekap_service.dart';
+
 class RekapTeacherDetailScreen
-    extends StatelessWidget {
+    extends StatefulWidget {
 
   final Map teacher;
 
@@ -11,37 +13,69 @@ class RekapTeacherDetailScreen
   });
 
   @override
-  Widget build(BuildContext context) {
+  State<RekapTeacherDetailScreen>
+      createState() =>
+          _RekapTeacherDetailScreenState();
+}
 
-    final List data = [
+class _RekapTeacherDetailScreenState
+    extends State<
+        RekapTeacherDetailScreen> {
 
-      {
-        "tanggal":
-            "12 Mei 2026",
-        "hari":
-            "Senin",
-        "status":
-            "Hadir",
-        "catatan":
-            "-",
-      },
+  bool isLoading = true;
 
-      {
-        "tanggal":
-            "13 Mei 2026",
-        "hari":
-            "Selasa",
-        "status":
-            "Izin",
-        "catatan":
-            "Acara keluarga",
-      },
-    ];
+  List attendances = [];
+
+  @override
+  void initState() {
+
+    super.initState();
+
+    loadData();
+  }
+
+  Future<void> loadData()
+  async {
+
+    try {
+
+      final data =
+          await RekapService()
+              .getDetailGuru(
+        widget.teacher['id'],
+      );
+
+      setState(() {
+
+        attendances =
+            data[
+                'attendances'];
+
+        isLoading =
+            false;
+      });
+
+    } catch (e) {
+
+      print(e);
+
+      setState(() {
+
+        isLoading =
+            false;
+      });
+    }
+  }
+
+  @override
+  Widget build(
+      BuildContext context) {
 
     return Scaffold(
 
       backgroundColor:
-          const Color(0xffF5F7FA),
+          const Color(
+              0xffF5F7FA),
 
       appBar: AppBar(
 
@@ -58,161 +92,131 @@ class RekapTeacherDetailScreen
         ),
       ),
 
-      body: Padding(
+      body: isLoading
 
-        padding:
-            const EdgeInsets.all(16),
-
-        child: Column(
-
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-          children: [
-
-            Text(
-
-              teacher['name'],
-
-              style:
-                  const TextStyle(
-
-                fontSize: 22,
-
-                fontWeight:
-                    FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-
-              "Riwayat presensi guru",
-
-              style: TextStyle(
-                color:
-                    Colors.grey[700],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Expanded(
-
+          ? const Center(
               child:
-                  ListView.builder(
+                  CircularProgressIndicator(),
+            )
 
-                itemCount:
-                    data.length,
+          : Padding(
 
-                itemBuilder:
-                    (context, index) {
+              padding:
+                  const EdgeInsets
+                      .all(16),
 
-                  final item =
-                      data[index];
+              child: Column(
 
-                  return Container(
+                crossAxisAlignment:
+                    CrossAxisAlignment
+                        .start,
 
-                    margin:
-                        const EdgeInsets
-                            .only(
-                                bottom:
-                                    16),
+                children: [
 
-                    padding:
-                        const EdgeInsets
-                            .all(18),
+                  Text(
 
-                    decoration:
-                        BoxDecoration(
+                    widget.teacher[
+                        'name'],
 
-                      color:
-                          Colors.white,
+                    style:
+                        const TextStyle(
 
-                      borderRadius:
-                          BorderRadius.circular(
-                              18),
+                      fontSize:
+                          22,
+
+                      fontWeight:
+                          FontWeight.bold,
                     ),
+                  ),
 
-                    child: Column(
+                  const SizedBox(
+                      height: 20),
 
-                      crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
+                  Expanded(
 
-                      children: [
+                    child:
+                        ListView.builder(
 
-                        Text(
+                      itemCount:
+                          attendances
+                              .length,
 
-                          item[
-                              'tanggal'],
+                      itemBuilder:
+                          (
+                        context,
+                        index,
+                      ) {
 
-                          style:
-                              const TextStyle(
-                            fontWeight:
-                                FontWeight.bold,
-                          ),
-                        ),
+                        final item =
+                            attendances[
+                                index];
 
-                        const SizedBox(
-                            height:
-                                6),
+                        return Container(
 
-                        Text(
-                          item['hari'],
-                        ),
-
-                        const SizedBox(
-                            height:
-                                10),
-
-                        Container(
+                          margin:
+                              const EdgeInsets
+                                  .only(
+                                      bottom:
+                                          16),
 
                           padding:
-                              const EdgeInsets.symmetric(
-                            horizontal:
-                                12,
-                            vertical:
-                                6,
-                          ),
+                              const EdgeInsets
+                                  .all(
+                                      18),
 
                           decoration:
                               BoxDecoration(
 
-                            color: Colors
-                                .teal
-                                .withOpacity(
-                                    0.1),
+                            color:
+                                Colors.white,
 
                             borderRadius:
                                 BorderRadius.circular(
-                                    30),
+                                    18),
                           ),
 
-                          child: Text(
-                            item[
-                                'status'],
+                          child:
+                              Column(
+
+                            crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
+
+                            children: [
+
+                              Text(
+                                item[
+                                    'tanggal'],
+                              ),
+
+                              const SizedBox(
+                                  height:
+                                      10),
+
+                              Text(
+                                "Status : ${item['status']}",
+                              ),
+
+                              Text(
+                                "Jam Masuk : ${item['jam_masuk']}",
+                              ),
+
+                              Text(
+                                "Jam Pulang : ${item['jam_pulang']}",
+                              ),
+
+                              Text(
+                                "Catatan : ${item['catatan']}",
+                              ),
+                            ],
                           ),
-                        ),
-
-                        const SizedBox(
-                            height:
-                                10),
-
-                        Text(
-
-                          "Catatan : ${item['catatan']}",
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
