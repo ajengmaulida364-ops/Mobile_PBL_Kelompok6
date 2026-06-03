@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../services/admin/class_service.dart';
+import '../../../services/admin/student_service.dart';
 
-class EditStudentScreen
-    extends StatefulWidget {
-
+class EditStudentScreen extends StatefulWidget {
   final Map student;
 
   const EditStudentScreen({
@@ -13,270 +12,137 @@ class EditStudentScreen
   });
 
   @override
-  State<EditStudentScreen>
-      createState() =>
-          _EditStudentScreenState();
+  State<EditStudentScreen> createState() =>
+      _EditStudentScreenState();
 }
 
 class _EditStudentScreenState
     extends State<EditStudentScreen> {
 
-  late TextEditingController
-      nameController;
+  late TextEditingController nameController;
+  late TextEditingController nisnController;
+  late TextEditingController parentNameController;
+  late TextEditingController parentPhoneController;
+  late TextEditingController addressController;
 
-  late TextEditingController
-      nisnController;
-
-  late TextEditingController
-      parentNameController;
-
-  late TextEditingController
-      parentPhoneController;
-
-  late TextEditingController
-      addressController;
-
-  String selectedGender =
-      'Laki-laki';
-
+  String selectedGender = 'Laki-laki';
   String selectedClass = '';
-
   bool isActive = true;
 
   bool isLoadingClass = true;
-
   List classes = [];
 
   @override
   void initState() {
     super.initState();
 
-    final student =
-        widget.student;
+    final student = widget.student;
 
-    nameController =
-        TextEditingController(
-      text:
-          student['name']
-                  ?.toString() ??
-              '',
+    nameController = TextEditingController(
+      text: student['name']?.toString() ?? '',
     );
 
-    nisnController =
-        TextEditingController(
-      text:
-          student['nisn']
-                  ?.toString() ??
-              '',
+    nisnController = TextEditingController(
+      text: student['nisn']?.toString() ?? '',
     );
 
-    parentNameController =
-        TextEditingController(
-      text:
-          student['parent_name']
-                  ?.toString() ??
-              '',
+    parentNameController = TextEditingController(
+      text: student['parent_name']?.toString() ?? '',
     );
 
-    parentPhoneController =
-        TextEditingController(
-      text:
-          student['parent_phone']
-                  ?.toString() ??
-              '',
+    parentPhoneController = TextEditingController(
+      text: student['parent_phone']?.toString() ?? '',
     );
 
-    addressController =
-        TextEditingController(
-      text:
-          student['address']
-                  ?.toString() ??
-              '',
+    addressController = TextEditingController(
+      text: student['address']?.toString() ?? '',
     );
 
     selectedGender =
-        student['gender']
-                ?.toString() ??
-            'Laki-laki';
+        student['gender']?.toString() ?? 'Laki-laki';
 
+    // 🔥 FIX PENTING (class_id)
     selectedClass =
-        student['class']
-                ?.toString() ??
-            '';
+        student['class_id']?.toString() ?? '';
 
     isActive =
-
         student['is_active'] == 1 ||
-
         student['is_active'] == true;
 
     getClasses();
   }
 
   Future<void> getClasses() async {
+    final result = await ClassService().getClasses();
 
-    try {
+    if (!mounted) return;
 
-      final result =
-          await ClassService()
-              .getClasses();
-
-      setState(() {
-
-        classes = result;
-
-        isLoadingClass = false;
-      });
-
-    } catch (e) {
-
-      print(e);
-    }
+    setState(() {
+      classes = result;
+      isLoadingClass = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor:
-          const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-
-        backgroundColor:
-            Colors.teal,
-
-        title: const Text(
-
-          "Edit Siswa",
-
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
+        backgroundColor: Colors.teal,
+        title: const Text("Edit Siswa"),
       ),
 
       body: SingleChildScrollView(
-
-        padding:
-            const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
 
         child: Column(
-
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            const Text(
-
-              "Edit Siswa",
-
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight:
-                    FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-
-              "Perbarui data siswa.",
-
-              style: TextStyle(
-                color: Colors.grey[600],
-              ),
-            ),
 
             const SizedBox(height: 30),
 
-            /// NAMA
             _label("Nama"),
-
             _input(
-              controller:
-                  nameController,
-              hint:
-                  "Nama lengkap siswa",
+              controller: nameController,
+              hint: "Nama lengkap siswa",
             ),
 
             const SizedBox(height: 20),
 
-            /// NISN
             _label("NISN"),
-
             _input(
-              controller:
-                  nisnController,
-              hint:
-                  "NISN siswa",
+              controller: nisnController,
+              hint: "NISN siswa",
             ),
 
             const SizedBox(height: 20),
 
-            /// GENDER
             _label("Jenis Kelamin"),
 
             Row(
-
               children: [
-
                 Expanded(
-
                   child: RadioListTile(
-
-                    value:
-                        'Laki-laki',
-
-                    groupValue:
-                        selectedGender,
-
-                    title:
-                        const Text(
-                            "Laki-laki"),
-
-                    activeColor:
-                        Colors.teal,
-
-                    onChanged:
-                        (value) {
-
+                    value: 'Laki-laki',
+                    groupValue: selectedGender,
+                    title: const Text("Laki-laki"),
+                    onChanged: (value) {
                       setState(() {
-
-                        selectedGender =
-                            value!;
+                        selectedGender = value!;
                       });
                     },
                   ),
                 ),
 
                 Expanded(
-
                   child: RadioListTile(
-
-                    value:
-                        'Perempuan',
-
-                    groupValue:
-                        selectedGender,
-
-                    title:
-                        const Text(
-                            "Perempuan"),
-
-                    activeColor:
-                        Colors.teal,
-
-                    onChanged:
-                        (value) {
-
+                    value: 'Perempuan',
+                    groupValue: selectedGender,
+                    title: const Text("Perempuan"),
+                    onChanged: (value) {
                       setState(() {
-
-                        selectedGender =
-                            value!;
+                        selectedGender = value!;
                       });
                     },
                   ),
@@ -286,164 +152,75 @@ class _EditStudentScreenState
 
             const SizedBox(height: 20),
 
-            /// KELAS
             _label("Kelas"),
 
             isLoadingClass
-
-                ? const Center(
-                    child:
-                        CircularProgressIndicator(),
-                  )
-
+                ? const CircularProgressIndicator()
                 : Wrap(
-
                     spacing: 10,
+                    children: classes.map((kelas) {
+                      return ChoiceChip(
+                        label: Text("Kelas ${kelas['name']}"),
+                        selected:
+                            selectedClass ==
+                            kelas['id'].toString(),
 
-                    children:
-                        classes.map(
-                      (kelas) {
-
-                        return ChoiceChip(
-
-                          label: Text(
-                            "Kelas ${kelas['name']}",
-                          ),
-
-                          selected:
-                              selectedClass ==
-                              kelas['name']
-                                  .toString(),
-
-                          selectedColor:
-                              Colors.teal,
-
-                          labelStyle:
-                              TextStyle(
-
-                            color:
-                                selectedClass ==
-                                        kelas['name']
-                                            .toString()
-
-                                    ? Colors
-                                        .white
-
-                                    : Colors
-                                        .black,
-                          ),
-
-                          onSelected:
-                              (value) {
-
-                            setState(() {
-
-                              selectedClass =
-                                  kelas['name']
-                                      .toString();
-                            });
-                          },
-                        );
-                      },
-                    ).toList(),
+                        onSelected: (value) {
+                          setState(() {
+                            selectedClass =
+                                kelas['id'].toString();
+                          });
+                        },
+                      );
+                    }).toList(),
                   ),
 
             const SizedBox(height: 20),
 
-            /// ORTU
             _label("Nama Orang Tua"),
-
             _input(
-              controller:
-                  parentNameController,
-              hint:
-                  "Nama orang tua",
+              controller: parentNameController,
+              hint: "Nama orang tua",
             ),
 
             const SizedBox(height: 20),
 
-            /// TELEPON
             _label("Telepon Orang Tua"),
-
             _input(
-              controller:
-                  parentPhoneController,
-              hint:
-                  "08xxxxxxxxxx",
+              controller: parentPhoneController,
+              hint: "08xxxxxxxxxx",
             ),
 
             const SizedBox(height: 20),
 
-            /// ALAMAT
             _label("Alamat"),
 
             TextField(
-
-              controller:
-                  addressController,
-
+              controller: addressController,
               maxLines: 4,
-
-              decoration:
-                  InputDecoration(
-
-                hintText:
-                    "Alamat siswa",
-
+              decoration: InputDecoration(
                 filled: true,
-
-                fillColor:
-                    Colors.white,
-
-                border:
-                    OutlineInputBorder(
-
-                  borderRadius:
-                      BorderRadius
-                          .circular(
-                              14),
-
-                  borderSide:
-                      BorderSide.none,
+                fillColor: Colors.white,
+                hintText: "Alamat siswa",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            /// STATUS
             Row(
-
               mainAxisAlignment:
-                  MainAxisAlignment
-                      .spaceBetween,
-
+                  MainAxisAlignment.spaceBetween,
               children: [
-
-                const Text(
-
-                  "Status Aktif",
-
-                  style: TextStyle(
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
-                ),
-
+                const Text("Status Aktif"),
                 Switch(
-
                   value: isActive,
-
-                  activeColor:
-                      Colors.teal,
-
-                  onChanged:
-                      (value) {
-
+                  onChanged: (value) {
                     setState(() {
-
-                      isActive =
-                          value;
+                      isActive = value;
                     });
                   },
                 ),
@@ -452,46 +229,42 @@ class _EditStudentScreenState
 
             const SizedBox(height: 30),
 
-            /// BUTTON
             SizedBox(
-
               width: double.infinity,
-
               height: 52,
-
               child: ElevatedButton(
-
-                style:
-                    ElevatedButton.styleFrom(
-
-                  backgroundColor:
-                      Colors.orange,
-
-                  shape:
-                      RoundedRectangleBorder(
-
-                    borderRadius:
-                        BorderRadius
-                            .circular(
-                                14),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
 
-                onPressed: () {
+                onPressed: () async {
 
-                  print(
-                    "Update Siswa",
+                  final res =
+                      await StudentService().updateStudent(
+                    id: widget.student['id'],
+                    name: nameController.text,
+                    nisn: nisnController.text,
+                    gender: selectedGender,
+                    classId: selectedClass,
+                    parentName: parentNameController.text,
+                    parentPhone: parentPhoneController.text,
+                    address: addressController.text,
+                    isActive: isActive,
                   );
+
+                  if (!mounted) return;
+
+                  if (res == true) {
+                    Navigator.pop(context, true);
+                  }
                 },
 
                 child: const Text(
-
                   "Update",
-
-                  style: TextStyle(
-                    color:
-                        Colors.white,
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -501,52 +274,30 @@ class _EditStudentScreenState
     );
   }
 
-  Widget _label(String title) {
-
+  Widget _label(String text) {
     return Padding(
-
-      padding:
-          const EdgeInsets.only(
-              bottom: 8),
-
+      padding: const EdgeInsets.only(bottom: 8),
       child: Text(
-
-        title,
-
+        text,
         style: const TextStyle(
-          fontWeight:
-              FontWeight.bold,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
   Widget _input({
-
-    required TextEditingController
-        controller,
-
+    required TextEditingController controller,
     required String hint,
   }) {
-
     return TextField(
-
       controller: controller,
-
       decoration: InputDecoration(
-
         hintText: hint,
-
         filled: true,
-
         fillColor: Colors.white,
-
         border: OutlineInputBorder(
-
-          borderRadius:
-              BorderRadius.circular(
-                  14),
-
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
       ),

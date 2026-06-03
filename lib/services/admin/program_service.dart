@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class ProgramService {
 
   final String baseUrl =
-      'http://10.0.2.2:8000/api';
+      'http://10.0.2.2:8000/api/admin';
 
   /// GET PROGRAM
   Future<List> getPrograms({

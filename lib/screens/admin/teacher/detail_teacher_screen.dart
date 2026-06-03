@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DetailTeacherScreen
-    extends StatelessWidget {
+class DetailTeacherScreen extends StatelessWidget {
 
   final Map teacher;
 
@@ -15,12 +14,15 @@ class DetailTeacherScreen
 
     return Scaffold(
 
-      backgroundColor:
-          const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
 
         backgroundColor: Colors.teal,
+
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
 
         title: const Text(
 
@@ -32,79 +34,91 @@ class DetailTeacherScreen
         ),
       ),
 
-      body: Padding(
+      body: SingleChildScrollView(
 
-        padding:
-            const EdgeInsets.all(20),
+        child: Padding(
 
-        child: Container(
+          padding: const EdgeInsets.all(20),
 
-          padding:
-              const EdgeInsets.all(20),
+          child: Container(
 
-          decoration: BoxDecoration(
+            width: double.infinity,
 
-            color: Colors.white,
+            padding: const EdgeInsets.all(20),
 
-            borderRadius:
-                BorderRadius.circular(20),
-          ),
+            decoration: BoxDecoration(
 
-          child: Column(
+              color: Colors.white,
 
-            children: [
+              borderRadius:
+                  BorderRadius.circular(20),
+            ),
 
-              const CircleAvatar(
+            child: Column(
 
-                radius: 45,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
 
-                backgroundColor:
-                    Colors.teal,
+              children: [
 
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 40,
+                const Center(
+
+                  child: CircleAvatar(
+
+                    radius: 45,
+
+                    backgroundColor:
+                        Colors.teal,
+
+                    child: Icon(
+
+                      Icons.person,
+
+                      color: Colors.white,
+
+                      size: 40,
+                    ),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              _item(
-                "Nama",
-                teacher['name'],
-              ),
+                _item(
+                  "Nama",
+                  teacher['name'],
+                ),
 
-              _item(
-                "Email",
-                teacher['email'],
-              ),
+                _item(
+                  "Email",
+                  teacher['email'],
+                ),
 
-              _item(
-                "Role",
-                teacher['role'],
-              ),
+                _item(
+                  "Role",
+                  teacher['role'],
+                ),
 
-              _item(
-                "Kelas",
-                teacher['class'],
-              ),
+                _item(
+                  "Kelas",
+                  teacher['class_name'],
+                ),
 
-              _item(
-                "NIP",
-                teacher['nip'],
-              ),
+                _item(
+                  "NIP",
+                  teacher['nip'],
+                ),
 
-              _item(
-                "No HP",
-                teacher['phone'],
-              ),
+                _item(
+                  "No HP",
+                  teacher['phone'],
+                ),
 
-              _item(
-                "Alamat",
-                teacher['address'],
-              ),
-            ],
+                _item(
+                  "Alamat",
+                  teacher['address'],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -116,11 +130,19 @@ class DetailTeacherScreen
     dynamic value,
   ) {
 
+    final displayValue =
+
+        value == null ||
+                value.toString().trim().isEmpty
+            ? '-'
+            : value.toString();
+
     return Padding(
 
       padding:
           const EdgeInsets.only(
-              bottom: 16),
+        bottom: 16,
+      ),
 
       child: Column(
 
@@ -134,15 +156,29 @@ class DetailTeacherScreen
             title,
 
             style: const TextStyle(
+
               fontWeight:
                   FontWeight.bold,
+
+              fontSize: 16,
             ),
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(
+            height: 6,
+          ),
 
           Text(
-            value.toString(),
+
+            displayValue,
+
+            style: const TextStyle(
+              fontSize: 15,
+            ),
+          ),
+
+          const SizedBox(
+            height: 6,
           ),
 
           const Divider(),

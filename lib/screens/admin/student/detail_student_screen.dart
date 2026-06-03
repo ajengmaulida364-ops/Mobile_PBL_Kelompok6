@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DetailStudentScreen
-    extends StatelessWidget {
-
+class DetailStudentScreen extends StatelessWidget {
   final Map student;
 
   const DetailStudentScreen({
@@ -14,178 +12,94 @@ class DetailStudentScreen
   Widget build(BuildContext context) {
 
     final bool isActive =
-
         student['is_active'] == 1 ||
-
         student['is_active'] == true;
 
     return Scaffold(
-
-      backgroundColor:
-          const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-
-        backgroundColor:
-            Colors.teal,
-
+        backgroundColor: Colors.teal,
         elevation: 0,
-
         title: const Text(
-
           "Detail Siswa",
-
           style: TextStyle(
             color: Colors.white,
-            fontWeight:
-                FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
 
       body: SingleChildScrollView(
-
-        padding:
-            const EdgeInsets.all(20),
-
+        padding: const EdgeInsets.all(20),
         child: Column(
-
           children: [
 
             /// HEADER
             Container(
-
               width: double.infinity,
-
-              padding:
-                  const EdgeInsets.all(
-                      24),
-
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-
                 color: Colors.white,
-
-                borderRadius:
-                    BorderRadius.circular(
-                        20),
-
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-
                   BoxShadow(
-                    color: Colors.black
-                        .withOpacity(0.05),
-
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 8,
-
-                    offset:
-                        const Offset(
-                            0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-
               child: Column(
-
                 children: [
 
                   const CircleAvatar(
-
                     radius: 45,
-
-                    backgroundColor:
-                        Colors.teal,
-
+                    backgroundColor: Colors.teal,
                     child: Icon(
                       Icons.school,
-                      color:
-                          Colors.white,
+                      color: Colors.white,
                       size: 40,
                     ),
                   ),
 
-                  const SizedBox(
-                      height: 18),
+                  const SizedBox(height: 18),
 
                   Text(
-
-                    student['name']
-                            ?.toString() ??
-                        '-',
-
-                    style:
-                        const TextStyle(
-
+                    student['name']?.toString() ?? '-',
+                    style: const TextStyle(
                       fontSize: 22,
-
-                      fontWeight:
-                          FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(
-                      height: 8),
+                  const SizedBox(height: 8),
 
                   Text(
-
                     "NISN : ${student['nisn']?.toString() ?? '-'}",
-
                     style: TextStyle(
-                      color:
-                          Colors.grey[700],
+                      color: Colors.grey[700],
                     ),
                   ),
 
-                  const SizedBox(
-                      height: 16),
+                  const SizedBox(height: 16),
 
                   Container(
-
-                    padding:
-                        const EdgeInsets
-                            .symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 8,
                     ),
-
-                    decoration:
-                        BoxDecoration(
-
+                    decoration: BoxDecoration(
                       color: isActive
-
-                          ? Colors.green
-                              .withOpacity(
-                                  0.1)
-
-                          : Colors.red
-                              .withOpacity(
-                                  0.1),
-
-                      borderRadius:
-                          BorderRadius
-                              .circular(
-                                  30),
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(30),
                     ),
-
                     child: Text(
-
-                      isActive
-
-                          ? "Aktif"
-
-                          : "Nonaktif",
-
-                      style:
-                          TextStyle(
-
-                        color: isActive
-
-                            ? Colors.green
-
-                            : Colors.red,
-
-                        fontWeight:
-                            FontWeight
-                                .bold,
+                      isActive ? "Aktif" : "Nonaktif",
+                      style: TextStyle(
+                        color: isActive ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -197,73 +111,46 @@ class DetailStudentScreen
 
             /// DETAIL
             Container(
-
               width: double.infinity,
-
-              padding:
-                  const EdgeInsets.all(
-                      20),
-
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-
                 color: Colors.white,
-
-                borderRadius:
-                    BorderRadius.circular(
-                        20),
-
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-
                   BoxShadow(
-                    color: Colors.black
-                        .withOpacity(0.05),
-
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 8,
-
-                    offset:
-                        const Offset(
-                            0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-
               child: Column(
-
                 children: [
 
                   _item(
                     "Jenis Kelamin",
-                    student['gender']
-                            ?.toString() ??
-                        '-',
+                    student['gender']?.toString() ?? '-',
                   ),
 
+                  /// 🔥 FIX INI (SEBELUMNYA student['class'])
                   _item(
                     "Kelas",
-                    student['class']
-                            ?.toString() ??
-                        '-',
+                    student['class_name']?.toString() ?? '-',
                   ),
 
                   _item(
                     "Nama Orang Tua",
-                    student['parent_name']
-                            ?.toString() ??
-                        '-',
+                    student['parent_name']?.toString() ?? '-',
                   ),
 
                   _item(
                     "Telepon Orang Tua",
-                    student['parent_phone']
-                            ?.toString() ??
-                        '-',
+                    student['parent_phone']?.toString() ?? '-',
                   ),
 
                   _item(
                     "Alamat",
-                    student['address']
-                            ?.toString() ??
-                        '-',
+                    student['address']?.toString() ?? '-',
                   ),
                 ],
               ),
@@ -274,32 +161,17 @@ class DetailStudentScreen
     );
   }
 
-  Widget _item(
-    String title,
-    String value,
-  ) {
-
+  Widget _item(String title, String value) {
     return Padding(
-
-      padding:
-          const EdgeInsets.only(
-              bottom: 18),
-
+      padding: const EdgeInsets.only(bottom: 18),
       child: Column(
-
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
           Text(
-
             title,
-
             style: const TextStyle(
-              fontWeight:
-                  FontWeight.bold,
-
+              fontWeight: FontWeight.bold,
               fontSize: 14,
             ),
           ),
@@ -307,9 +179,7 @@ class DetailStudentScreen
           const SizedBox(height: 6),
 
           Text(
-
             value,
-
             style: TextStyle(
               color: Colors.grey[800],
             ),
@@ -317,9 +187,7 @@ class DetailStudentScreen
 
           const SizedBox(height: 12),
 
-          const Divider(
-            height: 1,
-          ),
+          const Divider(height: 1),
         ],
       ),
     );

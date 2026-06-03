@@ -6,7 +6,7 @@ import 'package:http/http.dart'
 class PaymentService {
 
   final String baseUrl =
-      'http://10.0.2.2:8000/api';
+      'http://10.0.2.2:8000/api/admin';
 
   /// LIST SISWA
   Future<List> getStudents() async {
