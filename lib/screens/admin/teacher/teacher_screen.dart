@@ -10,13 +10,10 @@ class TeacherScreen extends StatefulWidget {
   const TeacherScreen({super.key});
 
   @override
-  State<TeacherScreen> createState() =>
-      _TeacherScreenState();
+  State<TeacherScreen> createState() => _TeacherScreenState();
 }
 
-class _TeacherScreenState
-    extends State<TeacherScreen> {
-
+class _TeacherScreenState extends State<TeacherScreen> {
   List teachers = [];
 
   bool isLoading = true;
@@ -29,46 +26,31 @@ class _TeacherScreenState
   }
 
   Future<void> getTeachers() async {
-
     try {
-
-      final result =
-          await TeacherService()
-              .getTeachers();
+      final result = await TeacherService().getTeachers();
 
       print(result);
 
       setState(() {
-
         teachers = result;
 
         isLoading = false;
       });
-
     } catch (e) {
-
       print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor:
-          const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-
         backgroundColor: Colors.teal,
-
         elevation: 0,
-
         title: const Text(
-
           "Data Guru",
-
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -77,24 +59,20 @@ class _TeacherScreenState
       ),
 
       /// TAMBAH GURU
-      floatingActionButton:
-          FloatingActionButton(
-
+      floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange,
-
-        onPressed: () {
-
-          Navigator.push(
-
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
-
             MaterialPageRoute(
-              builder: (_) =>
-                  const AddTeacherScreen(),
+              builder: (_) => const AddTeacherScreen(),
             ),
           );
-        },
 
+          if (result == true) {
+            await getTeachers();
+          }
+        },
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -102,246 +80,127 @@ class _TeacherScreenState
       ),
 
       body: isLoading
-
           ? const Center(
-              child:
-                  CircularProgressIndicator(),
+              child: CircularProgressIndicator(),
             )
-
           : teachers.isEmpty
-
               ? const Center(
-
                   child: Text(
-
                     "Data guru kosong",
-
                     style: TextStyle(
                       fontSize: 16,
                     ),
                   ),
                 )
-
               : RefreshIndicator(
-
                   onRefresh: getTeachers,
-
                   child: ListView.builder(
-
-                    padding:
-                        const EdgeInsets.all(
-                            16),
-
-                    itemCount:
-                        teachers.length,
-
-                    itemBuilder:
-                        (context, index) {
-
-                      final teacher =
-                          teachers[index];
+                    padding: const EdgeInsets.all(16),
+                    itemCount: teachers.length,
+                    itemBuilder: (context, index) {
+                      final teacher = teachers[index];
 
                       return Container(
-
-                        margin:
-                            const EdgeInsets.only(
-                                bottom: 16),
-
-                        padding:
-                            const EdgeInsets.all(
-                                16),
-
-                        decoration:
-                            BoxDecoration(
-
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
                           color: Colors.white,
-
-                          borderRadius:
-                              BorderRadius
-                                  .circular(
-                                      16),
-
+                          borderRadius: BorderRadius.circular(16),
                           boxShadow: [
-
                             BoxShadow(
-                              color: Colors
-                                  .black
-                                  .withValues(
-                                      alpha:
-                                          0.05),
-
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 6,
-
-                              offset:
-                                  const Offset(
-                                      0, 4),
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-
                         child: Row(
-
                           children: [
-
                             /// AVATAR
                             const CircleAvatar(
-
                               radius: 28,
-
-                              backgroundColor:
-                                  Colors.teal,
-
+                              backgroundColor: Colors.teal,
                               child: Icon(
                                 Icons.person,
-                                color: Colors
-                                    .white,
+                                color: Colors.white,
                               ),
                             ),
 
-                            const SizedBox(
-                                width: 16),
+                            const SizedBox(width: 16),
 
                             /// CONTENT
                             Expanded(
-
                               child: Column(
-
-                                crossAxisAlignment:
-                                    CrossAxisAlignment
-                                        .start,
-
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-
                                   /// NAMA
                                   Text(
-
-                                    teacher['name']
-                                        .toString(),
-
-                                    style:
-                                        const TextStyle(
-                                      fontWeight:
-                                          FontWeight
-                                              .bold,
-
-                                      fontSize:
-                                          16,
+                                    teacher['name'].toString(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
                                     ),
                                   ),
 
-                                  const SizedBox(
-                                      height:
-                                          6),
+                                  const SizedBox(height: 6),
 
                                   /// EMAIL
                                   Row(
-
                                     children: [
-
                                       Icon(
-                                        Icons
-                                            .email,
-                                        size:
-                                            16,
-                                        color: Colors
-                                                .grey[
-                                            600],
+                                        Icons.email,
+                                        size: 16,
+                                        color: Colors.grey[600],
                                       ),
-
-                                      const SizedBox(
-                                          width:
-                                              6),
-
+                                      const SizedBox(width: 6),
                                       Expanded(
-
-                                        child:
-                                            Text(
-
-                                          teacher[
-                                                  'email']
-                                              .toString(),
-
-                                          style:
-                                              TextStyle(
-                                            color:
-                                                Colors.grey[700],
+                                        child: Text(
+                                          teacher['email'] ?? '-',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
 
-                                  const SizedBox(
-                                      height:
-                                          6),
+                                  const SizedBox(height: 6),
 
                                   /// ROLE
                                   Row(
-
                                     children: [
-
                                       Icon(
-                                        Icons
-                                            .badge,
-                                        size:
-                                            16,
-                                        color: Colors
-                                                .grey[
-                                            600],
+                                        Icons.badge,
+                                        size: 16,
+                                        color: Colors.grey[600],
                                       ),
-
-                                      const SizedBox(
-                                          width:
-                                              6),
-
+                                      const SizedBox(width: 6),
                                       Text(
-
-                                        teacher[
-                                                'role']
-                                            .toString(),
-
-                                        style:
-                                            TextStyle(
-                                          color:
-                                              Colors.grey[700],
+                                        teacher['role'] ?? '-',
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
                                         ),
                                       ),
                                     ],
                                   ),
 
-                                  const SizedBox(
-                                      height:
-                                          6),
+                                  const SizedBox(height: 6),
 
                                   /// CLASS
                                   Row(
-
                                     children: [
-
                                       Icon(
-                                        Icons
-                                            .school,
-                                        size:
-                                            16,
-                                        color: Colors
-                                                .grey[
-                                            600],
+                                        Icons.school,
+                                        size: 16,
+                                        color: Colors.grey[600],
                                       ),
-
-                                      const SizedBox(
-                                          width:
-                                              6),
-
-                                      Text(
-
-                                        teacher[
-                                                'class']
-                                            .toString(),
-
-                                        style:
-                                            TextStyle(
-                                          color:
-                                              Colors.grey[700],
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          teacher['class_name'] ?? '-',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -352,143 +211,105 @@ class _TeacherScreenState
 
                             /// MENU
                             PopupMenuButton(
-
-                              itemBuilder:
-                                  (context) => [
-
+                              itemBuilder: (context) => [
                                 const PopupMenuItem(
-                                  value:
-                                      'detail',
-                                  child: Text(
-                                      "Detail"),
+                                  value: 'detail',
+                                  child: Text("Detail"),
                                 ),
-
                                 const PopupMenuItem(
-                                  value:
-                                      'edit',
-                                  child: Text(
-                                      "Edit"),
+                                  value: 'edit',
+                                  child: Text("Edit"),
                                 ),
-
                                 const PopupMenuItem(
-                                  value:
-                                      'delete',
-                                  child: Text(
-                                      "Hapus"),
+                                  value: 'delete',
+                                  child: Text("Hapus"),
                                 ),
                               ],
-
-                              onSelected:
-                                  (value) {
-
-                                /// DETAIL
-                                if (value ==
-                                    'detail') {
-
+                              onSelected: (value) async {
+                                if (value == 'detail') {
                                   Navigator.push(
-
                                     context,
-
                                     MaterialPageRoute(
-                                      builder:
-                                          (_) =>
-                                              DetailTeacherScreen(
-                                        teacher:
-                                            teacher,
+                                      builder: (_) => DetailTeacherScreen(
+                                        teacher: teacher,
                                       ),
                                     ),
                                   );
                                 }
 
-                                /// EDIT
-                                if (value ==
-                                    'edit') {
-
-                                  Navigator.push(
-
+                                if (value == 'edit') {
+                                  final result = await Navigator.push(
                                     context,
-
                                     MaterialPageRoute(
-                                      builder:
-                                          (_) =>
-                                              EditTeacherScreen(
-                                        teacher:
-                                            teacher,
+                                      builder: (_) => EditTeacherScreen(
+                                        teacher: teacher,
                                       ),
                                     ),
                                   );
+
+                                  if (result == true) {
+                                    await getTeachers();
+                                  }
                                 }
 
-                                /// DELETE
-                                if (value ==
-                                    'delete') {
-
+                                if (value == 'delete') {
                                   showDialog(
-
-                                    context:
-                                        context,
-
-                                    builder:
-                                        (context) {
-
+                                    context: context,
+                                    builder: (context) {
                                       return AlertDialog(
-
-                                        title:
-                                            const Text(
+                                        title: const Text(
                                           "Hapus Guru",
                                         ),
-
-                                        content:
-                                            const Text(
+                                        content: const Text(
                                           "Yakin ingin menghapus guru ini?",
                                         ),
-
                                         actions: [
-
                                           TextButton(
-
-                                            onPressed:
-                                                () {
-
-                                              Navigator.pop(
-                                                  context);
+                                            onPressed: () {
+                                              Navigator.pop(context);
                                             },
-
-                                            child:
-                                                const Text(
+                                            child: const Text(
                                               "Batal",
                                             ),
                                           ),
-
                                           ElevatedButton(
-
-                                            style:
-                                                ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.red,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
                                             ),
-
-                                            onPressed:
-                                                () {
-
-                                              Navigator.pop(
-                                                  context);
-
-                                              ScaffoldMessenger.of(
-                                                      context)
-                                                  .showSnackBar(
-
-                                                const SnackBar(
-                                                  content:
-                                                      Text(
-                                                    "Guru berhasil dihapus",
-                                                  ),
-                                                ),
+                                            onPressed: () async {
+                                              final success =
+                                                  await TeacherService()
+                                                      .deleteTeacher(
+                                                teacher['id'],
                                               );
-                                            },
 
-                                            child:
-                                                const Text(
+                                              if (!mounted) return;
+
+                                              Navigator.pop(context);
+
+                                              if (success) {
+                                                await getTeachers();
+
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      "Guru berhasil dihapus",
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      "Gagal menghapus guru",
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            child: const Text(
                                               "Hapus",
                                             ),
                                           ),

@@ -6,7 +6,7 @@ import 'package:http/http.dart'
 class StructureService {
 
   final String baseUrl =
-      'http://10.0.2.2:8000/api';
+      'http://10.0.2.2:8000/api/admin';
 
   Future<List> getStructures({
 

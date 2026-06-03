@@ -1,29 +1,63 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/admin/rekap_service.dart';
 import 'rekap_student_detail_screen.dart';
 
-class RekapStudentScreen
-    extends StatelessWidget {
-
+class RekapStudentScreen extends StatefulWidget {
   const RekapStudentScreen({
     super.key,
   });
 
   @override
+  State<RekapStudentScreen> createState() =>
+      _RekapStudentScreenState();
+}
+
+class _RekapStudentScreenState
+    extends State<RekapStudentScreen> {
+
+  List students = [];
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getStudents();
+  }
+
+  Future<void> getStudents() async {
+
+    try {
+
+      final result =
+          await RekapService()
+              .getRekapSiswa();
+
+      if (!mounted) return;
+
+      setState(() {
+
+        students = result;
+
+        isLoading = false;
+      });
+
+    } catch (e) {
+
+      print(e);
+
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    final List students = [
-
-      {
-        "name":
-            "AHMAD ANGGORO",
-        "hadir": 20,
-        "izin": 1,
-        "sakit": 0,
-        "alpha": 1,
-        "total": 22,
-      },
-    ];
 
     return Scaffold(
 
@@ -86,160 +120,171 @@ class RekapStudentScreen
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
             Expanded(
 
-              child:
-                  ListView.builder(
+              child: isLoading
 
-                itemCount:
-                    students.length,
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator(),
+                    )
 
-                itemBuilder:
-                    (context, index) {
+                  : ListView.builder(
 
-                  final item =
-                      students[index];
+                      itemCount:
+                          students.length,
 
-                  return Container(
+                      itemBuilder:
+                          (context, index) {
 
-                    margin:
-                        const EdgeInsets
-                            .only(
-                                bottom:
-                                    16),
+                        final item =
+                            students[index];
 
-                    padding:
-                        const EdgeInsets
-                            .all(18),
+                        return Container(
 
-                    decoration:
-                        BoxDecoration(
-
-                      color:
-                          Colors.white,
-
-                      borderRadius:
-                          BorderRadius.circular(
-                              18),
-                    ),
-
-                    child: Column(
-
-                      crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
-
-                      children: [
-
-                        Text(
-
-                          item['name'],
-
-                          style:
-                              const TextStyle(
-
-                            fontSize: 18,
-
-                            fontWeight:
-                                FontWeight.bold,
+                          margin:
+                              const EdgeInsets.only(
+                            bottom: 16,
                           ),
-                        ),
 
-                        const SizedBox(
-                            height:
-                                16),
+                          padding:
+                              const EdgeInsets.all(
+                            18,
+                          ),
 
-                        Row(
+                          decoration:
+                              BoxDecoration(
 
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                            color:
+                                Colors.white,
 
-                          children: [
-
-                            _info(
-                              "Hadir",
-                              item[
-                                      'hadir']
-                                  .toString(),
-                              Colors.green,
+                            borderRadius:
+                                BorderRadius.circular(
+                              18,
                             ),
+                          ),
 
-                            _info(
-                              "Izin",
-                              item[
-                                      'izin']
-                                  .toString(),
-                              Colors.orange,
-                            ),
+                          child: Column(
 
-                            _info(
-                              "Sakit",
-                              item[
-                                      'sakit']
-                                  .toString(),
-                              Colors.blue,
-                            ),
+                            crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
 
-                            _info(
-                              "Alpha",
-                              item[
-                                      'alpha']
-                                  .toString(),
-                              Colors.red,
-                            ),
-                          ],
-                        ),
+                            children: [
 
-                        const SizedBox(
-                            height:
-                                16),
+                              Text(
 
-                        SizedBox(
+                                item['name'] ??
+                                    '-',
 
-                          width: double.infinity,
+                                style:
+                                    const TextStyle(
 
-                          child:
-                              ElevatedButton(
+                                  fontSize:
+                                      18,
 
-                            style:
-                                ElevatedButton.styleFrom(
+                                  fontWeight:
+                                      FontWeight
+                                          .bold,
+                                ),
+                              ),
 
-                              backgroundColor:
-                                  Colors.teal,
-                            ),
+                              const SizedBox(
+                                height: 16,
+                              ),
 
-                            onPressed:
-                                () {
+                              Row(
 
-                              Navigator.push(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
 
-                                context,
+                                children: [
 
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) =>
-                                          RekapStudentDetailScreen(
-                                    student:
-                                        item,
+                                  _info(
+                                    "Hadir",
+                                    item['hadir']
+                                        .toString(),
+                                    Colors.green,
+                                  ),
+
+                                  _info(
+                                    "Izin",
+                                    item['izin']
+                                        .toString(),
+                                    Colors.orange,
+                                  ),
+
+                                  _info(
+                                    "Sakit",
+                                    item['sakit']
+                                        .toString(),
+                                    Colors.blue,
+                                  ),
+
+                                  _info(
+                                    "Alpha",
+                                    item['alpha']
+                                        .toString(),
+                                    Colors.red,
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(
+                                height: 16,
+                              ),
+
+                              SizedBox(
+
+                                width:
+                                    double.infinity,
+
+                                child:
+                                    ElevatedButton(
+
+                                  style:
+                                      ElevatedButton
+                                          .styleFrom(
+
+                                    backgroundColor:
+                                        Colors.teal,
+                                  ),
+
+                                  onPressed:
+                                      () {
+
+                                    Navigator.push(
+
+                                      context,
+
+                                      MaterialPageRoute(
+
+                                        builder:
+                                            (_) =>
+                                                RekapStudentDetailScreen(
+                                          student:
+                                              item,
+                                        ),
+                                      ),
+                                    );
+                                  },
+
+                                  child:
+                                      const Text(
+                                    "Detail",
                                   ),
                                 ),
-                              );
-                            },
-
-                            child:
-                                const Text(
-                              "Detail",
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
@@ -248,11 +293,8 @@ class RekapStudentScreen
   }
 
   Widget _info(
-
     String title,
-
     String value,
-
     Color color,
   ) {
 

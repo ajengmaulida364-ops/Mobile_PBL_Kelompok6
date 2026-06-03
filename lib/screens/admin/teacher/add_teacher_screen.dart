@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../../../services/admin/class_service.dart';
+import '../../../services/admin/teacher_service.dart';
 
-class AddTeacherScreen
-    extends StatefulWidget {
-
-  const AddTeacherScreen({
-    super.key,
-  });
+class AddTeacherScreen extends StatefulWidget {
+  const AddTeacherScreen({super.key});
 
   @override
-  State<AddTeacherScreen>
-      createState() =>
-          _AddTeacherScreenState();
+  State<AddTeacherScreen> createState() =>
+      _AddTeacherScreenState();
 }
 
 class _AddTeacherScreenState
     extends State<AddTeacherScreen> {
-
   final nameController =
       TextEditingController();
 
-  final emailController =
+  final usernameController =
       TextEditingController();
 
   final passwordController =
@@ -36,12 +31,7 @@ class _AddTeacherScreenState
   final addressController =
       TextEditingController();
 
-  String selectedRole =
-      'teacher';
-
   String selectedClass = '';
-
-  bool isActive = true;
 
   bool isLoadingClass = true;
 
@@ -55,19 +45,17 @@ class _AddTeacherScreenState
   }
 
   Future<void> getClasses() async {
-
     try {
-
       final result =
           await ClassService()
               .getClasses();
 
-      setState(() {
+      if (!mounted) return;
 
+      setState(() {
         classes = result;
 
         if (classes.isNotEmpty) {
-
           selectedClass =
               classes[0]['id']
                   .toString();
@@ -75,55 +63,85 @@ class _AddTeacherScreenState
 
         isLoadingClass = false;
       });
-
     } catch (e) {
-
       print(e);
+
+      if (!mounted) return;
+
+      setState(() {
+        isLoadingClass = false;
+      });
+    }
+  }
+
+  Future<void> saveTeacher() async {
+    final result =
+        await TeacherService()
+            .createTeacher(
+      name:
+          nameController.text.trim(),
+      username:
+          usernameController.text
+              .trim(),
+      password:
+          passwordController.text
+              .trim(),
+      classId: selectedClass,
+      nip:
+          nipController.text.trim(),
+      phone:
+          phoneController.text.trim(),
+      address:
+          addressController.text
+              .trim(),
+    );
+
+    if (!mounted) return;
+
+    if (result) {
+      Navigator.pop(
+        context,
+        true,
+      );
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Gagal menyimpan guru",
+          ),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       backgroundColor:
           const Color(0xffF5F7FA),
 
       appBar: AppBar(
-
-        backgroundColor: Colors.teal,
-
-        elevation: 0,
+        backgroundColor:
+            Colors.teal,
 
         title: const Text(
-
           "Tambah Guru",
-
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight:
-                FontWeight.bold,
-          ),
         ),
       ),
 
       body: SingleChildScrollView(
-
         padding:
             const EdgeInsets.all(20),
 
         child: Column(
-
           crossAxisAlignment:
-              CrossAxisAlignment.start,
+              CrossAxisAlignment
+                  .start,
 
           children: [
-
             const Text(
-
               "Tambah Guru",
-
               style: TextStyle(
                 fontSize: 24,
                 fontWeight:
@@ -131,20 +149,10 @@ class _AddTeacherScreenState
               ),
             ),
 
-            const SizedBox(height: 6),
-
-            Text(
-
-              "Isi data guru untuk disimpan ke sistem.",
-
-              style: TextStyle(
-                color: Colors.grey[600],
-              ),
+            const SizedBox(
+              height: 30,
             ),
 
-            const SizedBox(height: 30),
-
-            /// NAMA
             _label("Nama"),
 
             _input(
@@ -154,332 +162,163 @@ class _AddTeacherScreenState
                   "Nama lengkap guru",
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
-            /// EMAIL
-            _label("Email"),
+            _label("Username"),
 
             _input(
               controller:
-                  emailController,
-              hint: "Email guru",
+                  usernameController,
+              hint:
+                  "Username login",
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
-            /// PASSWORD
             _label("Password"),
 
             _input(
               controller:
                   passwordController,
-              hint: "Password akun",
+              hint: "Password",
               obscure: true,
             ),
 
-            const SizedBox(height: 20),
-
-            /// ROLE
-            _label("Role"),
-
-            Row(
-
-              children: [
-
-                Expanded(
-
-                  child: RadioListTile(
-
-                    value: 'teacher',
-
-                    groupValue:
-                        selectedRole,
-
-                    activeColor:
-                        Colors.teal,
-
-                    title:
-                        const Text(
-                            "Guru"),
-
-                    onChanged:
-                        (value) {
-
-                      setState(() {
-
-                        selectedRole =
-                            value!;
-
-                        if (selectedRole ==
-                            'operator') {
-
-                          selectedClass =
-                              '';
-                        }
-                      });
-                    },
-                  ),
-                ),
-
-                Expanded(
-
-                  child: RadioListTile(
-
-                    value: 'operator',
-
-                    groupValue:
-                        selectedRole,
-
-                    activeColor:
-                        Colors.teal,
-
-                    title:
-                        const Text(
-                            "Operator"),
-
-                    onChanged:
-                        (value) {
-
-                      setState(() {
-
-                        selectedRole =
-                            value!;
-
-                        if (selectedRole ==
-                            'operator') {
-
-                          selectedClass =
-                              '';
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ],
+            const SizedBox(
+              height: 20,
             ),
 
-            const SizedBox(height: 20),
-
-            /// KELAS
             _label("Kelas"),
 
             isLoadingClass
-
                 ? const Center(
                     child:
                         CircularProgressIndicator(),
                   )
-
                 : Wrap(
-
                     spacing: 10,
-
-                    children:
-                        classes.map(
-                      (kelas) {
-
-                        return ChoiceChip(
-
-                          label: Text(
-                            kelas['name']
-                                .toString(),
-                          ),
-
-                          selected:
-                              selectedClass ==
-                              kelas['id']
-                                  .toString(),
-
-                          selectedColor:
-                              Colors.teal,
-
-                          disabledColor:
-                              Colors.grey[
-                                  300],
-
-                          labelStyle:
-                              TextStyle(
-
-                            color:
-                                selectedClass ==
-                                        kelas['id']
-                                            .toString()
-
-                                    ? Colors
-                                        .white
-
-                                    : Colors
-                                        .black,
-                          ),
-
-                          onSelected:
-                              selectedRole ==
-                                      'operator'
-
-                                  ? null
-
-                                  : (value) {
-
-                                      setState(() {
-
-                                        selectedClass =
-                                            kelas['id']
-                                                .toString();
-                                      });
-                                    },
-                        );
-                      },
-                    ).toList(),
+                    children: classes
+                        .map((kelas) {
+                      return ChoiceChip(
+                        label: Text(
+                          kelas['name']
+                              .toString(),
+                        ),
+                        selected:
+                            selectedClass ==
+                                kelas['id']
+                                    .toString(),
+                        selectedColor:
+                            Colors.teal,
+                        labelStyle:
+                            TextStyle(
+                          color: selectedClass ==
+                                  kelas['id']
+                                      .toString()
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        onSelected:
+                            (value) {
+                          setState(() {
+                            selectedClass =
+                                kelas['id']
+                                    .toString();
+                          });
+                        },
+                      );
+                    }).toList(),
                   ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
-            /// NIP
             _label("NIP"),
 
             _input(
               controller:
                   nipController,
-              hint:
-                  "Nomor induk pegawai",
+              hint: "NIP",
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
-            /// PHONE
             _label("Telepon"),
 
             _input(
               controller:
                   phoneController,
-              hint:
-                  "08xxxxxxxxxx",
+              hint: "08xxxx",
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
-            /// ADDRESS
             _label("Alamat"),
 
             TextField(
-
               controller:
                   addressController,
-
               maxLines: 4,
-
               decoration:
                   InputDecoration(
-
                 hintText:
                     "Alamat lengkap guru",
-
                 filled: true,
-
                 fillColor:
                     Colors.white,
-
                 border:
                     OutlineInputBorder(
-
                   borderRadius:
                       BorderRadius
                           .circular(
-                              14),
-
+                    14,
+                  ),
                   borderSide:
                       BorderSide.none,
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            /// STATUS
-            Row(
-
-              mainAxisAlignment:
-                  MainAxisAlignment
-                      .spaceBetween,
-
-              children: [
-
-                const Text(
-
-                  "Status Aktif",
-
-                  style: TextStyle(
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
-                ),
-
-                Switch(
-
-                  activeColor:
-                      Colors.teal,
-
-                  value: isActive,
-
-                  onChanged:
-                      (value) {
-
-                    setState(() {
-
-                      isActive =
-                          value;
-                    });
-                  },
-                ),
-              ],
+            const SizedBox(
+              height: 30,
             ),
 
-            const SizedBox(height: 30),
-
-            /// BUTTON
             SizedBox(
-
               width: double.infinity,
-
               height: 52,
-
               child: ElevatedButton(
-
                 style:
                     ElevatedButton.styleFrom(
-
                   backgroundColor:
                       Colors.orange,
-
                   shape:
                       RoundedRectangleBorder(
-
                     borderRadius:
                         BorderRadius
                             .circular(
-                                14),
+                      14,
+                    ),
                   ),
                 ),
-
-                onPressed: () {
-
-                  print(
-                    "Tambah Guru",
-                  );
-                },
-
+                onPressed:
+                    saveTeacher,
                 child: const Text(
-
                   "Simpan",
-
                   style: TextStyle(
                     color:
                         Colors.white,
-
-                    fontSize: 16,
-
                     fontWeight:
-                        FontWeight.bold,
+                        FontWeight
+                            .bold,
                   ),
                 ),
               ),
@@ -490,18 +329,14 @@ class _AddTeacherScreenState
     );
   }
 
-  Widget _label(String title) {
-
+  Widget _label(String text) {
     return Padding(
-
       padding:
           const EdgeInsets.only(
-              bottom: 8),
-
+        bottom: 8,
+      ),
       child: Text(
-
-        title,
-
+        text,
         style: const TextStyle(
           fontWeight:
               FontWeight.bold,
@@ -511,36 +346,27 @@ class _AddTeacherScreenState
   }
 
   Widget _input({
-
     required TextEditingController
         controller,
-
     required String hint,
-
     bool obscure = false,
   }) {
-
     return TextField(
-
       controller: controller,
-
       obscureText: obscure,
-
-      decoration: InputDecoration(
-
+      decoration:
+          InputDecoration(
         hintText: hint,
-
         filled: true,
-
         fillColor: Colors.white,
-
-        border: OutlineInputBorder(
-
+        border:
+            OutlineInputBorder(
           borderRadius:
               BorderRadius.circular(
-                  14),
-
-          borderSide: BorderSide.none,
+            14,
+          ),
+          borderSide:
+              BorderSide.none,
         ),
       ),
     );
