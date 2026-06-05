@@ -338,7 +338,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                           children: [
                                             Expanded(
                                               child: SizedBox(
-                                                height: 44,
+                                                height: 50,
                                                 child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
@@ -369,6 +369,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                                     "Edit",
                                                     style: TextStyle(
                                                       color: Colors.white,
+                                                      fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -376,10 +377,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(width: 12),
+                                            const SizedBox(width: 16),
                                             Expanded(
                                               child: SizedBox(
-                                                height: 44,
+                                                height: 50,
                                                 child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
@@ -419,6 +420,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                                     "Hapus",
                                                     style: TextStyle(
                                                       color: Colors.white,
+                                                      fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
