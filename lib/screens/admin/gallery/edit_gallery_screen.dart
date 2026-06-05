@@ -3,30 +3,22 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
+import '../../../services/admin/gallery_service.dart';
 
-class EditGalleryScreen
-    extends StatefulWidget {
-
+class EditGalleryScreen extends StatefulWidget {
   final Map gallery;
 
   const EditGalleryScreen({
-
     super.key,
-
     required this.gallery,
   });
 
   @override
-  State<EditGalleryScreen>
-      createState() =>
-          _EditGalleryScreenState();
+  State<EditGalleryScreen> createState() => _EditGalleryScreenState();
 }
 
-class _EditGalleryScreenState
-    extends State<EditGalleryScreen> {
-
-  late TextEditingController
-      titleController;
+class _EditGalleryScreenState extends State<EditGalleryScreen> {
+  late TextEditingController titleController;
 
   late String category;
 
@@ -36,56 +28,33 @@ class _EditGalleryScreenState
 
   @override
   void initState() {
-
     super.initState();
 
-    titleController =
-        TextEditingController(
-
-      text:
-          widget.gallery['title'],
+    titleController = TextEditingController(
+      text: widget.gallery['title'],
     );
 
-    category =
-        widget.gallery['category'];
+    category = widget.gallery['category'];
   }
 
-  Future<void> pickImage()
-  async {
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
 
-    final picker =
-        ImagePicker();
-
-    final picked =
-        await picker.pickImage(
-
-      source:
-          ImageSource.gallery,
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
     );
 
     if (picked != null) {
-
       setState(() {
-
-        imageFile =
-            File(picked.path);
+        imageFile = File(picked.path);
       });
     }
   }
 
-  Future<void> updateGallery()
-  async {
-
-    if (titleController
-        .text
-        .isEmpty) {
-
-      ScaffoldMessenger.of(
-              context)
-          .showSnackBar(
-
+  Future<void> updateGallery() async {
+    if (titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-
           content: Text(
             "Judul wajib diisi",
           ),
@@ -96,311 +65,182 @@ class _EditGalleryScreenState
     }
 
     setState(() {
-
       isLoading = true;
     });
 
-    await Future.delayed(
-
-      const Duration(
-        seconds: 1,
-      ),
+    final success = await GalleryService().updateGallery(
+      id: widget.gallery['id'],
+      title: titleController.text,
+      category: category,
+      image: imageFile,
     );
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(
-            context)
-        .showSnackBar(
+    setState(() {
+      isLoading = false;
+    });
 
-      const SnackBar(
-
-        content: Text(
-          "Galeri berhasil diupdate",
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Galeri berhasil diupdate",
+          ),
         ),
-      ),
-    );
+      );
 
-    Navigator.pop(context);
+      Navigator.pop(
+        context,
+        true,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Gagal mengupdate galeri",
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor:
-          const Color(
-              0xffF5F7FA),
-
+      backgroundColor: const Color(0xffF5F7FA),
       appBar: AppBar(
-
-        backgroundColor:
-            Colors.teal,
-
+        backgroundColor: Colors.teal,
         elevation: 0,
-
         title: const Text(
-
           "Edit Galeri",
-
           style: TextStyle(
-
             color: Colors.white,
-
-            fontWeight:
-                FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
-
       body: SingleChildScrollView(
-
-        padding:
-            const EdgeInsets.all(
-                20),
-
+        padding: const EdgeInsets.all(20),
         child: Column(
-
-          crossAxisAlignment:
-              CrossAxisAlignment
-                  .start,
-
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             /// IMAGE
             GestureDetector(
-
               onTap: pickImage,
-
               child: Container(
-
                 height: 220,
-
-                width:
-                    double.infinity,
-
-                decoration:
-                    BoxDecoration(
-
+                width: double.infinity,
+                decoration: BoxDecoration(
                   color: Colors.white,
-
-                  borderRadius:
-                      BorderRadius.circular(
-                          20),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-
-                child: imageFile !=
-                        null
-
+                child: imageFile != null
                     ? ClipRRect(
-
-                        borderRadius:
-                            BorderRadius.circular(
-                                20),
-
-                        child:
-                            Image.file(
-
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.file(
                           imageFile!,
-
-                          fit: BoxFit
-                              .cover,
+                          fit: BoxFit.cover,
                         ),
                       )
-
                     : ClipRRect(
-
-                        borderRadius:
-                            BorderRadius.circular(
-                                20),
-
-                        child:
-                            Image.network(
-
-                          widget.gallery[
-                              'image'],
-
-                          fit: BoxFit
-                              .cover,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.network(
+                          widget.gallery['image'],
+                          fit: BoxFit.cover,
                         ),
                       ),
               ),
             ),
 
-            const SizedBox(
-                height: 24),
+            const SizedBox(height: 24),
 
             /// TITLE
             const Text(
-
               "Judul Galeri",
-
               style: TextStyle(
-
-                fontWeight:
-                    FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
-            const SizedBox(
-                height: 10),
+            const SizedBox(height: 10),
 
             TextField(
-
-              controller:
-                  titleController,
-
-              decoration:
-                  InputDecoration(
-
+              controller: titleController,
+              decoration: InputDecoration(
                 filled: true,
-
-                fillColor:
-                    Colors.white,
-
-                border:
-                    OutlineInputBorder(
-
-                  borderRadius:
-                      BorderRadius.circular(
-                          14),
-
-                  borderSide:
-                      BorderSide.none,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
 
-            const SizedBox(
-                height: 24),
+            const SizedBox(height: 24),
 
             /// CATEGORY
             const Text(
-
               "Kategori",
-
               style: TextStyle(
-
-                fontWeight:
-                    FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
-            const SizedBox(
-                height: 10),
+            const SizedBox(height: 10),
 
             DropdownButtonFormField(
-
               value: category,
-
               items: [
-
                 "Kegiatan Belajar",
-
                 "Outdoor",
-
                 "Keagamaan",
-
                 "Acara",
               ].map((e) {
-
                 return DropdownMenuItem(
-
                   value: e,
-
                   child: Text(e),
                 );
               }).toList(),
-
               onChanged: (value) {
-
                 setState(() {
-
-                  category =
-                      value!;
+                  category = value!;
                 });
               },
-
-              decoration:
-                  InputDecoration(
-
+              decoration: InputDecoration(
                 filled: true,
-
-                fillColor:
-                    Colors.white,
-
-                border:
-                    OutlineInputBorder(
-
-                  borderRadius:
-                      BorderRadius.circular(
-                          14),
-
-                  borderSide:
-                      BorderSide.none,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
 
-            const SizedBox(
-                height: 34),
+            const SizedBox(height: 34),
 
             /// BUTTON
             SizedBox(
-
-              width:
-                  double.infinity,
-
+              width: double.infinity,
               height: 56,
-
-              child:
-                  ElevatedButton(
-
-                style:
-                    ElevatedButton.styleFrom(
-
-                  backgroundColor:
-                      Colors.orange,
-
-                  shape:
-                      RoundedRectangleBorder(
-
-                    borderRadius:
-                        BorderRadius.circular(
-                            18),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
                   ),
                 ),
-
-                onPressed:
-                    isLoading
-
-                        ? null
-
-                        : updateGallery,
-
+                onPressed: isLoading ? null : updateGallery,
                 child: isLoading
-
                     ? const CircularProgressIndicator(
-                        color: Colors
-                            .white,
+                        color: Colors.white,
                       )
-
                     : const Text(
-
                         "Update Galeri",
-
-                        style:
-                            TextStyle(
-
-                          fontSize:
-                              16,
-
-                          fontWeight:
-                              FontWeight.bold,
-
-                          color: Colors
-                              .white,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
               ),
