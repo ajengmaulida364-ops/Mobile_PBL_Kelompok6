@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RekapService {
-  final String baseUrl = "http://10.0.2.2:8000/api/admin";
-
+  final String baseUrl = "http://127.0.0.1:8000/api/admin";
   Future<List<dynamic>> getRekapGuru() async {
     final response = await http.get(
       Uri.parse(

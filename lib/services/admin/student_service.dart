@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class StudentService {
-  static const String baseUrl = "http://10.0.2.2:8000/api/admin";
+  static const String baseUrl = "http://127.0.0.1:8000/api/admin";
 
   Future<List<dynamic>> getStudents() async {
     try {

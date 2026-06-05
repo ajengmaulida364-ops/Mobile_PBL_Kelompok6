@@ -1,13 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
 class ProgramService {
 
   final String baseUrl =
-      'http://10.0.2.2:8000/api/admin';
+      "http://127.0.0.1:8000/api/admin";
 
-  /// GET PROGRAM
   Future<List> getPrograms({
     String? type,
   }) async {
@@ -37,89 +37,145 @@ class ProgramService {
     );
   }
 
-  /// DELETE PROGRAM
-  Future<void> deleteProgram(
-      int id) async {
+  Future<bool> deleteProgram(
+    int id,
+  ) async {
 
-    final response =
-        await http.delete(
+    try {
 
-      Uri.parse(
-        '$baseUrl/programs/delete/$id',
-      ),
-    );
+      final response =
+          await http.delete(
 
-    if (response.statusCode != 200) {
-
-      throw Exception(
-        'Gagal hapus program',
+        Uri.parse(
+          '$baseUrl/programs/delete/$id',
+        ),
       );
+
+      return response.statusCode ==
+          200;
+
+    } catch (e) {
+
+      return false;
     }
   }
 
-  /// STORE PROGRAM
-  Future<void> storeProgram({
+  Future<bool> storeProgram({
 
     required String title,
     required String type,
     required String description,
 
+    File? image,
+
   }) async {
 
-    final response =
-        await http.post(
+    try {
 
-      Uri.parse(
-        '$baseUrl/programs/store',
-      ),
+      var request =
+          http.MultipartRequest(
 
-      body: {
+        'POST',
 
-        'title': title,
-        'type': type,
-        'description': description,
-      },
-    );
-
-    if (response.statusCode != 200 &&
-        response.statusCode != 201) {
-
-      throw Exception(
-        'Gagal tambah program',
+        Uri.parse(
+          '$baseUrl/programs/store',
+        ),
       );
+
+      request.fields['title'] =
+          title;
+
+      request.fields['type'] =
+          type;
+
+      request.fields[
+              'description'] =
+          description;
+
+      if (image != null) {
+
+        request.files.add(
+
+          await http.MultipartFile
+              .fromPath(
+
+            'image',
+
+            image.path,
+          ),
+        );
+      }
+
+      final response =
+          await request.send();
+
+      return response.statusCode ==
+              200 ||
+          response.statusCode ==
+              201;
+
+    } catch (e) {
+
+      return false;
     }
   }
 
-  /// UPDATE PROGRAM
-  Future<void> updateProgram({
+  Future<bool> updateProgram({
 
     required int id,
     required String title,
     required String type,
     required String description,
 
+    File? image,
+
   }) async {
 
-    final response =
-        await http.post(
+    try {
 
-      Uri.parse(
-        '$baseUrl/programs/update/$id',
-      ),
+      var request =
+          http.MultipartRequest(
 
-      body: {
+        'POST',
 
-        'title': title,
-        'type': type,
-        'description': description,
-      },
-    );
-
-    if (response.statusCode != 200) {
-
-      throw Exception(
-        'Gagal update program',
+        Uri.parse(
+          '$baseUrl/programs/update/$id',
+        ),
       );
+
+      request.fields['title'] =
+          title;
+
+      request.fields['type'] =
+          type;
+
+      request.fields[
+              'description'] =
+          description;
+
+      if (image != null) {
+
+        request.files.add(
+
+          await http.MultipartFile
+              .fromPath(
+
+            'image',
+
+            image.path,
+          ),
+        );
+      }
+
+      final response =
+          await request.send();
+
+      return response.statusCode ==
+          200;
+
+    } catch (e) {
+
+      return false;
     }
   }
 }
