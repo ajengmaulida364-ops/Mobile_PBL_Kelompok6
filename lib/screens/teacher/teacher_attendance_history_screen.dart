@@ -81,6 +81,7 @@ class _TeacherAttendanceHistoryScreenState
 
                     final checkIn = history['check_in'];
                     final checkOut = history['check_out'];
+                    final status = history['status'] ?? 'HADIR';
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 16),
@@ -113,12 +114,18 @@ class _TeacherAttendanceHistoryScreenState
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.green,
+                              color: status == 'HADIR'
+                                  ? Colors.green
+                                  : status == 'IZIN'
+                                      ? Colors.orange
+                                      : status == 'SAKIT'
+                                          ? Colors.red
+                                          : Colors.blue,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Text(
-                              "Hadir",
-                              style: TextStyle(
+                            child: Text(
+                              status,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -137,6 +144,13 @@ class _TeacherAttendanceHistoryScreenState
                               color: Colors.grey,
                             ),
                           ),
+                          if (history['note'] != null)
+                            Text(
+                              "Catatan : ${history['note']}",
+                              style: const TextStyle(
+                                color: Colors.black87,
+                              ),
+                            ),
                         ],
                       ),
                     );
