@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
+import '../../../services/admin/program_service.dart';
 
-class EditProgramScreen
-    extends StatefulWidget {
-
+class EditProgramScreen extends StatefulWidget {
   final Map program;
 
   const EditProgramScreen({
@@ -15,19 +14,13 @@ class EditProgramScreen
   });
 
   @override
-  State<EditProgramScreen>
-      createState() =>
-          _EditProgramScreenState();
+  State<EditProgramScreen> createState() => _EditProgramScreenState();
 }
 
-class _EditProgramScreenState
-    extends State<EditProgramScreen> {
+class _EditProgramScreenState extends State<EditProgramScreen> {
+  late TextEditingController titleController;
 
-  late TextEditingController
-      titleController;
-
-  late TextEditingController
-      descriptionController;
+  late TextEditingController descriptionController;
 
   late String type;
 
@@ -39,41 +32,26 @@ class _EditProgramScreenState
 
   @override
   void initState() {
-
     super.initState();
 
-    titleController =
-        TextEditingController(
-
-      text:
-          widget.program[
-              'title'],
+    titleController = TextEditingController(
+      text: widget.program['title'],
     );
 
-    descriptionController =
-        TextEditingController(
-
-      text:
-          widget.program[
-              'description'],
+    descriptionController = TextEditingController(
+      text: widget.program['description'],
     );
 
-    type =
-        widget.program['type'];
+    type = widget.program['type'];
   }
 
   Future pickImage() async {
-
-    final picked =
-        await picker.pickImage(
-
+    final picked = await picker.pickImage(
       source: ImageSource.gallery,
     );
 
     if (picked != null) {
-
       setState(() {
-
         image = File(
           picked.path,
         );
@@ -83,293 +61,168 @@ class _EditProgramScreenState
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor:
-          const Color(
-              0xffF5F7FA),
-
+      backgroundColor: const Color(0xffF5F7FA),
       appBar: AppBar(
-
-        backgroundColor:
-            Colors.teal,
-
+        backgroundColor: Colors.teal,
         title: const Text(
-
           'Edit Program',
-
           style: TextStyle(
             color: Colors.white,
-            fontWeight:
-                FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
-
       body: SingleChildScrollView(
-
-        padding:
-            const EdgeInsets.all(
-                20),
-
+        padding: const EdgeInsets.all(20),
         child: Container(
-
-          padding:
-              const EdgeInsets.all(
-                  20),
-
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-
             color: Colors.white,
-
-            borderRadius:
-                BorderRadius.circular(
-                    20),
+            borderRadius: BorderRadius.circular(20),
           ),
-
           child: Column(
-
-            crossAxisAlignment:
-                CrossAxisAlignment
-                    .start,
-
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               const Text(
-
                 'Edit Program',
-
                 style: TextStyle(
-
                   fontSize: 24,
-
-                  fontWeight:
-                      FontWeight.bold,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-
-              const SizedBox(
-                  height: 30),
-
-              _label(
-                  'Nama Program'),
-
+              const SizedBox(height: 30),
+              _label('Nama Program'),
               _input(
-                controller:
-                    titleController,
-                hint:
-                    'Nama program',
+                controller: titleController,
+                hint: 'Nama program',
               ),
-
-              const SizedBox(
-                  height: 20),
-
-              _label(
-                  'Jenis Program'),
-
+              const SizedBox(height: 20),
+              _label('Jenis Program'),
               DropdownButtonFormField(
-
                 value: type,
-
-                decoration:
-                    InputDecoration(
-
+                decoration: InputDecoration(
                   filled: true,
-
-                  fillColor:
-                      const Color(
-                          0xffF9FAFB),
-
-                  border:
-                      OutlineInputBorder(
-
-                    borderRadius:
-                        BorderRadius.circular(
-                            14),
-
-                    borderSide:
-                        BorderSide.none,
+                  fillColor: const Color(0xffF9FAFB),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-
                 items: const [
-
                   DropdownMenuItem(
-
-                    value:
-                        'mingguan',
-
-                    child: Text(
-                        'Mingguan'),
+                    value: 'mingguan',
+                    child: Text('Mingguan'),
                   ),
-
                   DropdownMenuItem(
-
-                    value:
-                        'bulanan',
-
-                    child: Text(
-                        'Bulanan'),
+                    value: 'bulanan',
+                    child: Text('Bulanan'),
                   ),
-
                   DropdownMenuItem(
-
-                    value:
-                        'tahunan',
-
-                    child: Text(
-                        'Tahunan'),
+                    value: 'tahunan',
+                    child: Text('Tahunan'),
                   ),
                 ],
-
                 onChanged: (v) {
-
                   setState(() {
-
-                    type =
-                        v.toString();
+                    type = v.toString();
                   });
                 },
               ),
-
-              const SizedBox(
-                  height: 20),
-
-              _label(
-                  'Foto Program'),
-
+              const SizedBox(height: 20),
+              _label('Foto Program'),
               GestureDetector(
-
                 onTap: pickImage,
-
                 child: Container(
-
                   height: 200,
-
-                  width:
-                      double.infinity,
-
-                  decoration:
-                      BoxDecoration(
-
-                    borderRadius:
-                        BorderRadius.circular(
-                            18),
-
-                    color:
-                        const Color(
-                            0xffF9FAFB),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    color: const Color(0xffF9FAFB),
                   ),
-
                   child: image != null
-
                       ? ClipRRect(
-
-                          borderRadius:
-                              BorderRadius.circular(
-                                  18),
-
-                          child:
-                              Image.file(
-
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.file(
                             image!,
-
-                            fit: BoxFit
-                                .cover,
+                            fit: BoxFit.cover,
                           ),
                         )
-
                       : ClipRRect(
-
-                          borderRadius:
-                              BorderRadius.circular(
-                                  18),
-
-                          child:
-                              Image.network(
-
-                            widget.program[
-                                'image'],
-
-                            fit: BoxFit
-                                .cover,
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.network(
+                            widget.program['image'],
+                            fit: BoxFit.cover,
                           ),
                         ),
                 ),
               ),
-
-              const SizedBox(
-                  height: 20),
-
-              _label(
-                  'Deskripsi'),
-
+              const SizedBox(height: 20),
+              _label('Deskripsi'),
               _textarea(
-                controller:
-                    descriptionController,
-                hint:
-                    'Deskripsi program',
+                controller: descriptionController,
+                hint: 'Deskripsi program',
               ),
-
-              const SizedBox(
-                  height: 30),
-
+              const SizedBox(height: 30),
               SizedBox(
-
-                width:
-                    double.infinity,
-
+                width: double.infinity,
                 height: 52,
-
-                child:
-                    ElevatedButton(
-
-                  style:
-                      ElevatedButton.styleFrom(
-
-                    backgroundColor:
-                        Colors.orange,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
                   ),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          setState(() {
+                            isLoading = true;
+                          });
 
-                  onPressed:
-                      isLoading
-                          ? null
-                          : () async {
+                          final success = await ProgramService().updateProgram(
+                            id: widget.program['id'],
+                            title: titleController.text,
+                            type: type,
+                            description: descriptionController.text,
+                          );
 
-                              ScaffoldMessenger.of(
-                                      context)
-                                  .showSnackBar(
+                          if (!mounted) return;
 
-                                const SnackBar(
+                          setState(() {
+                            isLoading = false;
+                          });
 
-                                  content: Text(
-                                    'Program berhasil diupdate',
-                                  ),
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Program berhasil diupdate',
                                 ),
-                              );
+                              ),
+                            );
 
-                              Navigator.pop(
-                                  context,
-                                  true);
-                            },
-
+                            Navigator.pop(
+                              context,
+                              true,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Gagal mengupdate program',
+                                ),
+                              ),
+                            );
+                          }
+                        },
                   child: isLoading
-
                       ? const CircularProgressIndicator(
-                          color:
-                              Colors.white,
+                          color: Colors.white,
                         )
-
                       : const Text(
-
                           'Update Program',
-
-                          style:
-                              TextStyle(
-
-                            color:
-                                Colors.white,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                 ),
@@ -380,101 +233,55 @@ class _EditProgramScreenState
       ),
     );
   }
+}
 
-  Widget _label(
-    String text,
-  ) {
-
-    return Padding(
-
-      padding:
-          const EdgeInsets.only(
-              bottom: 8),
-
-      child: Text(
-
-        text,
-
-        style: const TextStyle(
-
-          fontWeight:
-              FontWeight.bold,
-        ),
+Widget _label(
+  String text,
+) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _input({
-
-    required TextEditingController
-        controller,
-
-    required String hint,
-  }) {
-
-    return TextField(
-
-      controller: controller,
-
-      decoration: InputDecoration(
-
-        hintText: hint,
-
-        filled: true,
-
-        fillColor:
-            const Color(
-                0xffF9FAFB),
-
-        border:
-            OutlineInputBorder(
-
-          borderRadius:
-              BorderRadius.circular(
-                  14),
-
-          borderSide:
-              BorderSide.none,
-        ),
+Widget _input({
+  required TextEditingController controller,
+  required String hint,
+}) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: const Color(0xffF9FAFB),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _textarea({
-
-    required TextEditingController
-        controller,
-
-    required String hint,
-  }) {
-
-    return TextField(
-
-      controller: controller,
-
-      maxLines: 5,
-
-      decoration: InputDecoration(
-
-        hintText: hint,
-
-        filled: true,
-
-        fillColor:
-            const Color(
-                0xffF9FAFB),
-
-        border:
-            OutlineInputBorder(
-
-          borderRadius:
-              BorderRadius.circular(
-                  14),
-
-          borderSide:
-              BorderSide.none,
-        ),
+Widget _textarea({
+  required TextEditingController controller,
+  required String hint,
+}) {
+  return TextField(
+    controller: controller,
+    maxLines: 5,
+    decoration: InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: const Color(0xffF9FAFB),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
       ),
-    );
-  }
+    ),
+  );
 }
